@@ -1038,6 +1038,17 @@ function RHHome({ global, lvl, teamScores }) {
           <Pill color="brand">DUERP à jour</Pill>
         </div>} />
 
+      {/* Bannière alerte rouge — équipe en difficulté */}
+      <div className="rounded-2xl border-2 border-red-400 bg-red-50 p-5 flex items-start gap-4 shadow-soft">
+        <div className="text-3xl">⚠️</div>
+        <div className="flex-1">
+          <div className="font-display text-lg font-bold text-red-700 mb-1">Alerte Rouge — Équipe Production (14 pers.)</div>
+          <div className="text-sm text-red-900/80">Score de détresse en hausse de <b>+7 points</b> sur la semaine. Action immédiate recommandée par l'IA MindWork.</div>
+        </div>
+        <button onClick={()=>setTab('alerts')} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium whitespace-nowrap">Voir les recommandations →</button>
+      </div>
+
+
       <div className="grid md:grid-cols-4 gap-4">
         <Stat label="Score global" value={global} sub={lvl.label} tone={lvl.label==='Vert'?'ok':lvl.label==='Orange'?'warn':'danger'} />
         <Stat label="Salariés couverts" value={state.company.employees} sub="42/42 (100%)" tone="brand" />
@@ -1104,6 +1115,49 @@ function RHHome({ global, lvl, teamScores }) {
           </ResponsiveContainer>
         </div>
       </Card>
+
+      {/* Bloc ROI synthétique */}
+      <div className="rounded-2xl p-6 text-white" style={{background:'linear-gradient(135deg,#1E1A3C 0%,#2D2558 100%)'}}>
+        <div className="text-xs uppercase tracking-wider opacity-70 mb-2">Depuis l'activation MindWork (3 mois)</div>
+        <div className="flex items-start justify-between flex-wrap gap-6">
+          <div className="flex-1 min-w-[260px]">
+            <div className="font-display text-2xl font-bold mb-1">📊 Retour sur investissement estimé</div>
+            <div className="text-sm opacity-80">Aérotech Occitanie — 42 salariés · Abonnement : 1 050 €/mois</div>
+          </div>
+          <div className="font-display text-5xl font-bold" style={{color:'#A5B4FC'}}>× 4,2</div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-white/15">
+          <div><div className="font-display text-3xl font-bold" style={{color:'#A5B4FC'}}>- 18%</div><div className="text-xs opacity-75 mt-1">Absentéisme court terme</div></div>
+          <div><div className="font-display text-3xl font-bold" style={{color:'#A5B4FC'}}>29 k€</div><div className="text-xs opacity-75 mt-1">Économies estimées (3 mois)</div></div>
+          <div><div className="font-display text-3xl font-bold" style={{color:'#A5B4FC'}}>100%</div><div className="text-xs opacity-75 mt-1">Conformité OPCO formations</div></div>
+        </div>
+      </div>
+
+      {/* Cards Recommandations IA */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-lg">🤖</span>
+          <div className="font-display text-lg font-bold">Recommandations IA · Actions prioritaires cette semaine</div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="rounded-2xl bg-white border border-red-200 p-5 shadow-soft">
+            <div className="flex items-center justify-between mb-2"><div className="text-xl">🚨</div><span className="text-[10px] font-bold px-2 py-1 rounded-md bg-red-100 text-red-700">URGENT</span></div>
+            <div className="font-display font-bold mb-1">Atelier Flash Production</div>
+            <div className="text-xs text-ink-600">Score critique détecté. Séance de décharge émotionnelle recommandée sous 48h pour l'équipe Production.</div>
+          </div>
+          <div className="rounded-2xl bg-white border border-emerald-200 p-5 shadow-soft">
+            <div className="flex items-center justify-between mb-2"><div className="text-xl">🎓</div><span className="text-[10px] font-bold px-2 py-1 rounded-md bg-emerald-100 text-emerald-700">100% OPCO</span></div>
+            <div className="font-display font-bold mb-1">Formation Manager N+1</div>
+            <div className="text-xs text-ink-600">Module « Déceler le stress silencieux » — 3h. Financé ATLAS. 3 managers concernés.</div>
+          </div>
+          <div className="rounded-2xl bg-white border border-amber-200 p-5 shadow-soft">
+            <div className="flex items-center justify-between mb-2"><div className="text-xl">📋</div><span className="text-[10px] font-bold px-2 py-1 rounded-md bg-amber-100 text-amber-700">RECOMMANDÉ</span></div>
+            <div className="font-display font-bold mb-1">Mise à jour DUERP</div>
+            <div className="text-xs text-ink-600">2 nouvelles zones de risque détectées. Intégration automatique possible en 1 clic.</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
