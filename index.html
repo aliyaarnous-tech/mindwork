@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MindWork — Plateforme de prévention RPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Manrope', 'system-ui', 'sans-serif'],
+          display: ['Fraunces', 'Georgia', 'serif'],
+        },
+        colors: {
+          ink: '#0F1226',
+          paper: '#FAFAF7',
+          mist: '#F1F2F7',
+          rule: '#E5E7EB',
+          brand: {
+            50:'#EEF2FF', 100:'#E0E7FF', 200:'#C7D2FE', 300:'#A5B4FC',
+            400:'#818CF8', 500:'#6366F1', 600:'#4F46E5', 700:'#4338CA', 800:'#3730A3', 900:'#312E81'
+          },
+          accent: '#7C3AED',
+          ok: '#16A34A',
+          warn: '#D97706',
+          danger: '#DC2626',
+        },
+      },
+    },
+  };
+</script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<style>
+  html, body, #root { height: 100%; }
+  body { background: #FAFAF7; color: #0F1226; -webkit-font-smoothing: antialiased; }
+  .font-display { font-family: 'Fraunces', Georgia, serif; }
+  .grain {
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(15,18,38,0.05) 1px, transparent 0);
+    background-size: 14px 14px;
+  }
+  .scrollbar-thin::-webkit-scrollbar { width:6px; height:6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px; }
+  .ring-gradient { background: conic-gradient(var(--g, #4F46E5) 0% var(--p, 75%), #E5E7EB var(--p, 75%) 100%); }
+  @keyframes fadein { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform:none; } }
+  .fadein { animation: fadein .35s ease both; }
+  @keyframes pulse-ring { 0% { box-shadow:0 0 0 0 rgba(220,38,38,.45); } 70% { box-shadow:0 0 0 12px rgba(220,38,38,0); } 100% { box-shadow:0 0 0 0 rgba(220,38,38,0); } }
+  .pulse-ring { animation: pulse-ring 2.2s infinite; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef, createContext, useContext } = React;
+const {
+  ResponsiveContainer, LineChart, Line, BarChart, Bar, AreaChart, Area,
+  PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, RadialBarChart, RadialBar
+} = Recharts;
+
+/* =====================================================================
+   1. PERSISTENCE LAYER (localStorage)
+===================================================================== */
+const STORAGE_KEY = 'mindwork.v1.state';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+}
+
+/* =====================================================================
+   2. SEED DATA — démo pré-remplie cohérente PME industrielle Occitanie
+===================================================================== */
+const TEAMS = [
+  { id:'prod',   name:'Production',         size: 14, color:'#4F46E5' },
+  { id:'qual',   name:'Qualité',            size: 8,  color:'#7C3AED' },
+  { id:'maint',  name:'Maintenance',        size: 6,  color:'#0EA5E9' },
+  { id:'bdet',   name:"Bureau d'études",    size: 9,  color:'#10B981' },
+  { id:'admin',  name:'Administratif',      size: 5,  color:'#F59E0B' },
+];
+
+// 8 semaines d'historique + semaine en cours
+const WEEKS = Array.from({length:9}, (_,i) => `S${i+8}`);
+
+// Génère un score réaliste avec tendance
+function genTeamHistory(teamId, baseTrend) {
+  return WEEKS.map((w, i) => {
+    const noise = (Math.sin(i + teamId.length) + 1) * 4;
+    const score = Math.max(35, Math.min(92, baseTrend[i] + noise));
+    return { week:w, score: Math.round(score) };
+  });
+}
+
+const SEED = {
+  company: {
+    name: 'Aérotech Occitanie',
+    siret: '843 256 901 00027',
+    sector: 'Sous-traitance aéronautique',
+    employees: 42,
+    convCollective: 'Métallurgie (IDCC 3248)',
+    address: 'ZAC de Montaudran, 31400 Toulouse',
+  },
+  teams: TEAMS,
+  history: {
+    prod:  genTeamHistory('prod',  [78,75,72,68,62,58,54,58,61]),
+    qual:  genTeamHistory('qual',  [82,80,78,76,74,72,70,68,67]),
+    maint: genTeamHistory('maint', [85,84,82,80,78,77,76,75,74]),
+    bdet:  genTeamHistory('bdet',  [70,68,66,64,60,57,52,49,48]),
+    admin: genTeamHistory('admin', [88,86,85,84,83,82,81,80,79]),
+  },
+  // Réponses individuelles du salarié connecté (Sophie Martin)
+  myAnswers: [
+    { week:'S8',  score:82 }, { week:'S9', score:78 }, { week:'S10', score:70 },
+    { week:'S11', score:65 }, { week:'S12', score:58 }, { week:'S13', score:55 },
+    { week:'S14', score:66 }, { week:'S15', score:74 },
+  ],
+  // DUERP — risques RPS détectés
+  duerpRisks: [
+    {
+      id:'r1', unit:'Production', risk:'Charge de travail excessive',
+      sources:'Cadence record (objectif 870 avions Airbus 2026)',
+      gravity:3, frequency:4, score:12, level:'Élevé',
+      measures:[
+        'Audit de charge mensuel par équipe',
+        'Réorganisation rotation postes (Q3 2026)',
+        'Atelier RIPPLE "Charge mentale" déployé S15',
+      ],
+      lastUpdate:'2026-04-12',
+    },
+    {
+      id:'r2', unit:"Bureau d'études", risk:'Tensions interpersonnelles',
+      sources:'Restructuration division D&S, départs récents',
+      gravity:3, frequency:3, score:9, level:'Élevé',
+      measures:[
+        'Médiation collective programmée S17',
+        'Formation managers "Communication non-violente"',
+      ],
+      lastUpdate:'2026-04-10',
+    },
+    {
+      id:'r3', unit:'Qualité', risk:'Manque de reconnaissance',
+      sources:'Questionnaire SENTINEL S12-S15, items 4 et 7',
+      gravity:2, frequency:3, score:6, level:'Modéré',
+      measures:[
+        'Mise en place rituel feedback hebdo',
+        'Programme "Manager Protecteur" (Q2 2026)',
+      ],
+      lastUpdate:'2026-04-08',
+    },
+    {
+      id:'r4', unit:'Maintenance', risk:'Horaires décalés / fatigue',
+      sources:'Astreintes nuit, déclaration médecine du travail',
+      gravity:2, frequency:4, score:8, level:'Modéré',
+      measures:[
+        'Révision planning astreintes (S20)',
+        'Visite médicale renforcée trimestrielle',
+      ],
+      lastUpdate:'2026-04-05',
+    },
+  ],
+  // Catalogue RIPPLE — micro-formations
+  ripple: [
+    { id:'rp1', title:'Reconnaître les signaux faibles du burnout', duration:12, target:'Manager', format:'Vidéo + quiz', completed:18, total:42 },
+    { id:'rp2', title:'Communication non-violente en atelier', duration:18, target:'Tous', format:'Atelier 1h', completed:9, total:42 },
+    { id:'rp3', title:'Charge mentale : techniques de récupération', duration:8, target:'Tous', format:'Audio guidé', completed:24, total:42 },
+    { id:'rp4', title:'Conduire un entretien de retour après arrêt', duration:15, target:'Manager', format:'Vidéo', completed:5, total:8 },
+    { id:'rp5', title:'CSE : analyser un signalement RPS', duration:25, target:'Élu CSE', format:'Webinaire', completed:3, total:4 },
+    { id:'rp6', title:'Droit à la déconnexion : poser le cadre', duration:10, target:'Tous', format:'Vidéo + checklist', completed:31, total:42 },
+  ],
+  // Audit trail SHIELD — preuves juridiques
+  auditLog: [
+    { date:'2026-04-14 09:12', actor:'Système', action:'DUERP mis à jour automatiquement (risque r1)', hash:'a3f9b2c1' },
+    { date:'2026-04-12 14:30', actor:'M. Lefèvre (DRH)', action:'Plan d\'action validé pour Production', hash:'b7e4d091' },
+    { date:'2026-04-10 11:05', actor:'Système', action:'Alerte rouge équipe Bureau d\'études', hash:'c2a8f513' },
+    { date:'2026-04-08 16:22', actor:'M. Lefèvre (DRH)', action:'Atelier RIPPLE programmé pour S17', hash:'d4f1e208' },
+    { date:'2026-04-05 10:40', actor:'Système', action:'Rapport mensuel CSE généré', hash:'e8c3b677' },
+    { date:'2026-04-01 08:00', actor:'Système', action:'Campagne SENTINEL S14 lancée (42 invitations)', hash:'f1d9a4c2' },
+  ],
+  user: {
+    me: { name:'Sophie Martin', initials:'SM', role:'Technicienne qualité', team:'Qualité', tenure:'5 ans' },
+  },
+  campaignWeek: 'S16',
+};
+
+/* =====================================================================
+   3. SENTINEL — Questionnaire scientifiquement adossé
+   Inspiré PSS-10 / MBI-GS / PHQ-9 (versions courtes)
+   1 question est INVERSÉE (anti-fraude)
+===================================================================== */
+const SENTINEL_QUESTIONS = [
+  { id:'q1', axis:'PSS', text:"Cette semaine, à quelle fréquence vous êtes-vous senti(e) dépassé(e) par ce que vous aviez à faire ?", inverted:false },
+  { id:'q2', axis:'MBI-EE', text:"Vous êtes-vous senti(e) émotionnellement vidé(e) par votre travail ?", inverted:false },
+  { id:'q3', axis:'MBI-EP', text:"Avez-vous ressenti que vous accomplissiez des choses utiles dans votre travail ?", inverted:true },
+  { id:'q4', axis:'Recon', text:"Vous êtes-vous senti(e) reconnu(e) par votre hiérarchie ou vos collègues ?", inverted:true },
+  { id:'q5', axis:'PHQ', text:"Avez-vous eu du mal à vous endormir ou à rester endormi(e) à cause du travail ?", inverted:false },
+  { id:'q6', axis:'Charge', text:"Avez-vous eu le sentiment que votre charge de travail était soutenable ?", inverted:true },
+  { id:'q7', axis:'Soutien', text:"Avez-vous pu compter sur le soutien de votre équipe en cas de difficulté ?", inverted:true },
+  { id:'q8', axis:'PSS', text:"Vous êtes-vous senti(e) tendu(e), nerveux(se) ou irritable au travail ?", inverted:false },
+];
+const LIKERT = [
+  { val:0, label:'Jamais',         emoji:'😌' },
+  { val:1, label:'Rarement',       emoji:'🙂' },
+  { val:2, label:'Parfois',        emoji:'😐' },
+  { val:3, label:'Souvent',        emoji:'😟' },
+  { val:4, label:'Très souvent',   emoji:'😩' },
+];
+
+// Score 0..100 (100 = excellent)
+function computeScore(answers) {
+  let total = 0, max = 0;
+  SENTINEL_QUESTIONS.forEach(q => {
+    const a = answers[q.id];
+    if (a == null) return;
+    const v = q.inverted ? (4 - a) : a;
+    total += v;
+    max += 4;
+  });
+  if (max === 0) return null;
+  // 0 = très mauvais signal, donc on inverse: score bien-être = 100 - (total/max)*100
+  return Math.round(100 - (total/max)*100);
+}
+function scoreLevel(s) {
+  if (s == null) return { label:'—', color:'bg-gray-300', text:'text-gray-500' };
+  if (s >= 70)   return { label:'Vert',   color:'bg-ok',     text:'text-ok',     hex:'#16A34A' };
+  if (s >= 50)   return { label:'Orange', color:'bg-warn',   text:'text-warn',   hex:'#D97706' };
+  return         { label:'Rouge',  color:'bg-danger', text:'text-danger', hex:'#DC2626' };
+}
+
+/* =====================================================================
+   4. APP STATE CONTEXT
+===================================================================== */
+const AppCtx = createContext(null);
+
+function useApp() { return useContext(AppCtx); }
+
+function AppProvider({ children }) {
+  const [state, setState] = useState(() => loadState() || SEED);
+  const [role, setRole] = useState(null); // 'salarie' | 'manager' | 'rh' | 'admin'
+  useEffect(() => { saveState(state); }, [state]);
+
+  const reset = () => { localStorage.removeItem(STORAGE_KEY); setState(SEED); };
+
+  return (
+    <AppCtx.Provider value={{ state, setState, role, setRole, reset }}>
+      {children}
+    </AppCtx.Provider>
+  );
+}
+
+/* =====================================================================
+   5. UI ATOMS
+===================================================================== */
+function Logo({ small }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className={`${small?'w-7 h-7':'w-9 h-9'} rounded-lg bg-gradient-to-br from-brand-600 to-accent flex items-center justify-center text-white font-bold shadow-sm`}>
+        <svg viewBox="0 0 24 24" fill="none" className={small?'w-4 h-4':'w-5 h-5'} stroke="currentColor" strokeWidth="2">
+          <path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 1 0 10 0V7a5 5 0 0 0-5-5Z"/>
+          <path d="M5 13a7 7 0 0 0 14 0"/>
+          <path d="M12 20v2"/>
+        </svg>
+      </div>
+      <div>
+        <div className={`font-display font-black tracking-tight ${small?'text-base leading-none':'text-xl leading-none'}`}>MindWork</div>
+        {!small && <div className="text-[10px] uppercase tracking-[0.18em] text-gray-500 mt-0.5">Prévenir · Mesurer · Conformer</div>}
+      </div>
+    </div>
+  );
+}
+function Pill({ children, color='gray' }) {
+  const map = {
+    gray:   'bg-gray-100 text-gray-700',
+    brand:  'bg-brand-50 text-brand-700',
+    ok:     'bg-green-50 text-green-700',
+    warn:   'bg-amber-50 text-amber-700',
+    danger: 'bg-red-50 text-red-700',
+    ink:    'bg-ink text-white',
+  };
+  return <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full ${map[color]}`}>{children}</span>;
+}
+function Card({ children, className='' }) {
+  return <div className={`bg-white border border-gray-200 rounded-2xl ${className}`}>{children}</div>;
+}
+function SectionTitle({ kicker, title, action }) {
+  return (
+    <div className="flex items-end justify-between mb-4">
+      <div>
+        {kicker && <div className="text-[10px] uppercase tracking-[0.2em] text-brand-600 font-semibold">{kicker}</div>}
+        <h2 className="font-display text-2xl font-bold tracking-tight">{title}</h2>
+      </div>
+      {action}
+    </div>
+  );
+}
+function Stat({ label, value, sub, tone='ink' }) {
+  const colors = { ink:'text-ink', ok:'text-ok', warn:'text-warn', danger:'text-danger', brand:'text-brand-700' };
+  return (
+    <Card className="p-5">
+      <div className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">{label}</div>
+      <div className={`font-display text-3xl font-bold mt-1 ${colors[tone]}`}>{value}</div>
+      {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
+    </Card>
+  );
+}
+
+/* =====================================================================
+   6. ROLE PICKER (login simulé)
+===================================================================== */
+function RoleSelect() {
+  const { setRole } = useApp();
+  const roles = [
+    { id:'salarie', icon:'🧑‍🏭', title:'Salarié',          sub:'Sophie Martin · Qualité',        desc:'Questionnaire hebdo, score perso confidentiel, ressources & droits.' },
+    { id:'manager', icon:'👥',  title:"Manager d'équipe", sub:'Pierre Dumont · Production',      desc:'Vue agrégée anonyme de votre équipe, micro-formations RIPPLE.' },
+    { id:'rh',      icon:'📊',  title:'RH / DRH',         sub:'Marie Lefèvre · Direction RH',    desc:'Dashboard global, alertes, plans d\'action, rapport CSE.' },
+    { id:'admin',   icon:'⚖️',  title:'Admin DUERP',      sub:'Cabinet juridique · Conformité',  desc:'Génération DUERP, audit trail SHIELD, preuves juridiques.' },
+  ];
+  return (
+    <div className="min-h-screen bg-paper grain">
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex items-center justify-between">
+          <Logo />
+          <div className="text-xs text-gray-500">v1.0 · démo pilote · Toulouse</div>
+        </div>
+
+        <div className="mt-12 max-w-3xl">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-brand-600 font-semibold">Plateforme de prévention RPS</div>
+          <h1 className="font-display text-5xl md:text-6xl font-black tracking-tight mt-2 leading-[1.05]">
+            La conformité psychosociale,<br/>
+            <span className="italic font-medium text-brand-700">enfin à portée des PME industrielles.</span>
+          </h1>
+          <p className="text-gray-600 mt-5 text-lg leading-relaxed max-w-2xl">
+            Détection précoce par IA · DUERP généré automatiquement · Conformité Article L.4121-1 et ISO 45003. Choisissez un rôle pour explorer la démo.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
+          {roles.map((r,i) => (
+            <button key={r.id} onClick={()=>setRole(r.id)}
+              className="text-left bg-white border border-gray-200 rounded-2xl p-6 hover:border-brand-500 hover:shadow-lg hover:-translate-y-0.5 transition-all fadein"
+              style={{ animationDelay: `${i*60}ms` }}>
+              <div className="text-3xl">{r.icon}</div>
+              <div className="font-display text-xl font-bold mt-3">{r.title}</div>
+              <div className="text-xs text-brand-700 font-semibold mt-1">{r.sub}</div>
+              <div className="text-sm text-gray-600 mt-3 leading-relaxed">{r.desc}</div>
+              <div className="mt-5 text-xs font-semibold text-brand-700 inline-flex items-center gap-1">
+                Entrer dans la démo
+                <span aria-hidden>→</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-16 grid md:grid-cols-3 gap-4">
+          <Card className="p-5">
+            <div className="text-2xl">🌡️</div>
+            <div className="font-bold mt-2">SENTINEL</div>
+            <div className="text-sm text-gray-600 mt-1">Détection IA hebdomadaire (90 sec) · échelles PSS-10, MBI, PHQ-9.</div>
+          </Card>
+          <Card className="p-5">
+            <div className="text-2xl">🌊</div>
+            <div className="font-bold mt-2">RIPPLE</div>
+            <div className="text-sm text-gray-600 mt-1">Micro-formations collectives ciblées par les alertes détectées.</div>
+          </Card>
+          <Card className="p-5">
+            <div className="text-2xl">🛡️</div>
+            <div className="font-bold mt-2">SHIELD</div>
+            <div className="text-sm text-gray-600 mt-1">DUERP automatisé · audit trail · preuves juridiques en cas de contentieux.</div>
+          </Card>
+        </div>
+
+        <div className="text-xs text-gray-400 mt-12 text-center">
+          MindWork · Aliya Arnous · Toulouse · 2026 — Démo pilote, données fictives. Stockage local navigateur.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   7. APP SHELL (header partagé après login)
+===================================================================== */
+function Shell({ children, sidebar=null, mobile=false }) {
+  const { role, setRole, state, reset } = useApp();
+  const roleLabel = { salarie:'Salarié', manager:'Manager', rh:'RH / DRH', admin:'Admin DUERP' }[role];
+  return (
+    <div className="min-h-screen bg-paper">
+      <header className="sticky top-0 z-30 bg-white/85 backdrop-blur border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Logo small />
+            <div className="hidden md:block h-5 w-px bg-gray-200" />
+            <div className="hidden md:block text-xs text-gray-600">
+              <span className="font-semibold">{state.company.name}</span> · {state.company.sector}
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Pill color="brand">{roleLabel}</Pill>
+            <button onClick={reset} title="Réinitialiser la démo"
+              className="text-[11px] text-gray-500 hover:text-ink">↺ reset</button>
+            <button onClick={()=>setRole(null)}
+              className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50">Changer de rôle</button>
+          </div>
+        </div>
+      </header>
+      <div className={`max-w-7xl mx-auto ${mobile?'':'px-4 md:px-6 py-6'} ${sidebar?'md:grid md:grid-cols-[220px_1fr] md:gap-6':''}`}>
+        {sidebar}
+        <main className={mobile?'':''}>{children}</main>
+      </div>
+    </div>
+  );
+}
+
+function Sidebar({ items, current, onChange }) {
+  return (
+    <aside className="hidden md:block sticky top-20 self-start">
+      <nav className="space-y-1">
+        {items.map(it => (
+          <button key={it.id} onClick={()=>onChange(it.id)}
+            className={`w-full flex items-center gap-3 text-left px-3 py-2.5 rounded-xl text-sm transition
+              ${current===it.id ? 'bg-ink text-white' : 'text-gray-700 hover:bg-white border border-transparent hover:border-gray-200'}`}>
+            <span className="text-base">{it.icon}</span>
+            <span className="font-medium">{it.label}</span>
+            {it.badge && <span className={`ml-auto text-[10px] px-1.5 py-0.5 rounded-full ${current===it.id?'bg-white/20 text-white':'bg-red-100 text-red-700'} font-bold`}>{it.badge}</span>}
+          </button>
+        ))}
+      </nav>
+      <div className="mt-6 p-3 rounded-xl bg-brand-50 border border-brand-100 text-[11px] text-brand-800 leading-relaxed">
+        <div className="font-semibold mb-1">🔒 Confidentialité</div>
+        Données agrégées · anonymisation à partir de 5 personnes par équipe · hébergement HDS.
+      </div>
+    </aside>
+  );
+}
+
+/* =====================================================================
+   8. SALARIÉ — Mobile-first (suit ton mockup employé)
+===================================================================== */
+function SalarieView() {
+  const { state, setState } = useApp();
+  const [tab, setTab] = useState('home');
+  const tabs = [
+    { id:'home',     icon:'🏠', label:'Accueil' },
+    { id:'sentinel', icon:'🌡️', label:'Sentinel' },
+    { id:'alert',    icon:'🚨', label:'Alerte' },
+    { id:'res',      icon:'📚', label:'Ressources' },
+    { id:'me',       icon:'👤', label:'Profil' },
+  ];
+
+  return (
+    <Shell mobile>
+      <div className="md:py-10 md:px-6">
+        <div className="md:max-w-md md:mx-auto">
+          {/* phone frame on desktop, full on mobile */}
+          <div className="md:bg-white md:rounded-[44px] md:shadow-2xl md:border md:border-gray-200 md:overflow-hidden md:min-h-[820px] flex flex-col bg-white min-h-screen md:min-h-0">
+            <div className="flex-1 overflow-y-auto scrollbar-thin">
+              <div className="px-5 pt-6 pb-24">
+                {tab==='home'     && <SalHome onGo={setTab} />}
+                {tab==='sentinel' && <SalSentinel onDone={()=>setTab('me')} />}
+                {tab==='alert'    && <SalAlert />}
+                {tab==='res'      && <SalResources />}
+                {tab==='me'       && <SalProfile />}
+              </div>
+            </div>
+            <nav className="bg-white border-t border-gray-200 flex pt-2 pb-3 sticky bottom-0">
+              {tabs.map(t => (
+                <button key={t.id} onClick={()=>setTab(t.id)}
+                  className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 ${tab===t.id?'text-brand-700':'text-gray-400'}`}>
+                  <span className="text-xl">{t.icon}</span>
+                  <span className="text-[10px] font-semibold">{t.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function SalHome({ onGo }) {
+  const { state } = useApp();
+  const last = state.myAnswers[state.myAnswers.length-1];
+  const lvl = scoreLevel(last.score);
+  return (
+    <div className="space-y-5 fadein">
+      <div>
+        <div className="text-xs text-gray-500">Bonjour 👋</div>
+        <h1 className="font-display text-2xl font-bold mt-0.5">{state.user.me.name.split(' ')[0]}</h1>
+        <div className="text-xs text-gray-500 mt-1">Semaine {state.campaignWeek} · {state.user.me.role}</div>
+      </div>
+
+      <div className="rounded-2xl p-5 text-white bg-gradient-to-br from-brand-600 to-accent">
+        <div className="text-xs uppercase tracking-wider opacity-80 font-semibold">Questionnaire de la semaine</div>
+        <div className="font-display text-xl font-bold mt-1">90 secondes pour vous écouter.</div>
+        <p className="text-sm opacity-90 mt-2 leading-relaxed">8 questions confidentielles. Vos réponses sont anonymisées et agrégées par équipe.</p>
+        <button onClick={()=>onGo('sentinel')} className="mt-4 bg-white text-brand-700 font-bold py-3 rounded-xl w-full hover:bg-brand-50 transition">Commencer →</button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="p-4 text-center">
+          <div className={`font-display text-3xl font-bold ${lvl.text}`}>{last.score}</div>
+          <div className="text-[11px] text-gray-500 mt-1">Mon score · {last.week}</div>
+        </Card>
+        <Card className="p-4 text-center">
+          <div className="font-display text-3xl font-bold">8</div>
+          <div className="text-[11px] text-gray-500 mt-1">Questionnaires remplis</div>
+        </Card>
+      </div>
+
+      <div>
+        <div className="font-bold mb-2.5">Recommandé pour vous</div>
+        <Card className="p-4 flex gap-3 mb-2.5">
+          <div className="text-2xl">🧘</div>
+          <div className="flex-1">
+            <div className="font-bold text-sm">Méditation guidée 7 jours</div>
+            <div className="text-xs text-gray-500 mt-0.5">10 min/jour · validé INSERM</div>
+            <Pill color="brand">Audio · 7 jours</Pill>
+          </div>
+        </Card>
+        <Card className="p-4 flex gap-3">
+          <div className="text-2xl">📔</div>
+          <div className="flex-1">
+            <div className="font-bold text-sm">Journal émotionnel privé</div>
+            <div className="text-xs text-gray-500 mt-0.5">Chiffré · jamais partagé</div>
+            <Pill color="ok">Privé</Pill>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function SalSentinel({ onDone }) {
+  const { state, setState } = useApp();
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [finished, setFinished] = useState(false);
+
+  const q = SENTINEL_QUESTIONS[step];
+  const progress = ((step+1)/SENTINEL_QUESTIONS.length)*100;
+  const selected = answers[q?.id];
+
+  const next = () => {
+    if (step < SENTINEL_QUESTIONS.length-1) setStep(s=>s+1);
+    else {
+      const score = computeScore(answers);
+      // ajoute à l'historique perso
+      setState(prev => ({
+        ...prev,
+        myAnswers: [...prev.myAnswers, { week:`S${parseInt(prev.campaignWeek.slice(1))+1}`, score }],
+        campaignWeek: `S${parseInt(prev.campaignWeek.slice(1))+1}`,
+      }));
+      setFinished(true);
+    }
+  };
+
+  if (finished) {
+    const sc = computeScore(answers);
+    const lvl = scoreLevel(sc);
+    return (
+      <div className="text-center space-y-4 pt-6 fadein">
+        <div className="text-5xl">✅</div>
+        <h2 className="font-display text-2xl font-bold">Merci, c'est enregistré.</h2>
+        <p className="text-sm text-gray-600 px-4">Vos réponses individuelles ne sont jamais transmises à votre employeur. Seuls les agrégats par équipe (≥5 personnes) sont communiqués.</p>
+        <div className="my-6">
+          <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full ring-gradient`}
+            style={{ '--g':lvl.hex, '--p':`${sc}%` }}>
+            <div className="bg-white w-24 h-24 rounded-full flex items-center justify-center">
+              <div>
+                <div className={`font-display text-3xl font-bold ${lvl.text}`}>{sc}</div>
+                <div className="text-[10px] text-gray-500">/100</div>
+              </div>
+            </div>
+          </div>
+          <div className="text-sm font-semibold mt-2">{lvl.label === 'Vert' ? 'Bon équilibre cette semaine' : lvl.label === 'Orange' ? 'Vigilance — quelques signaux à surveiller' : 'Signaux préoccupants — pensez à utiliser les ressources'}</div>
+        </div>
+        <button onClick={onDone} className="bg-ink text-white font-bold py-3 px-6 rounded-xl">Voir mon historique</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fadein">
+      <div className="mb-5">
+        <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <span>Question {step+1} / {SENTINEL_QUESTIONS.length}</span>
+          <span>{Math.round(progress)}%</span>
+        </div>
+        <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-brand-600 to-accent transition-all" style={{ width:`${progress}%` }} />
+        </div>
+      </div>
+
+      <Card className="p-6 mb-4">
+        <div className="text-[10px] uppercase tracking-wider text-brand-600 font-bold">{q.axis}</div>
+        <div className="font-bold text-base mt-2 leading-relaxed">{q.text}</div>
+        <div className="space-y-2 mt-5">
+          {LIKERT.map(o => (
+            <button key={o.val}
+              onClick={()=>setAnswers(a => ({...a, [q.id]:o.val}))}
+              className={`w-full flex items-center gap-3 p-3.5 rounded-xl border-2 text-sm font-medium text-left transition
+                ${selected===o.val ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-gray-200 hover:border-brand-400 hover:bg-brand-50/50'}`}>
+              <span className="text-xl">{o.emoji}</span>
+              <span>{o.label}</span>
+            </button>
+          ))}
+        </div>
+      </Card>
+
+      <div className="bg-brand-50 border border-brand-100 rounded-xl p-3 text-[11px] text-brand-800 flex gap-2 mb-4">
+        <span>🔒</span>
+        <span>Réponses chiffrées · agrégées par équipe ≥5 · non transmissibles individuellement à l'employeur (RGPD).</span>
+      </div>
+
+      <button disabled={selected==null} onClick={next}
+        className={`w-full py-4 rounded-xl font-bold text-white transition
+          ${selected!=null ? 'bg-gradient-to-r from-brand-600 to-accent hover:opacity-95' : 'bg-gray-300 cursor-not-allowed'}`}>
+        {step===SENTINEL_QUESTIONS.length-1 ? 'Envoyer mes réponses' : 'Question suivante →'}
+      </button>
+    </div>
+  );
+}
+
+function SalAlert() {
+  return (
+    <div className="space-y-4 fadein">
+      <div className="bg-gradient-to-br from-red-50 to-white border-2 border-red-200 rounded-2xl p-6 text-center">
+        <div className="text-5xl mb-2 inline-block pulse-ring rounded-full">🚨</div>
+        <div className="font-display text-xl font-bold text-red-700">Vos réponses indiquent un risque de burnout</div>
+        <p className="text-sm text-red-900/70 mt-2 leading-relaxed">Vous n'êtes pas seul(e). Voici les actions immédiates à votre disposition. <b>Aucune information n'est partagée avec votre employeur.</b></p>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 leading-relaxed">
+        💡 Le burnout est reconnu par la jurisprudence depuis l'arrêt Cass. soc. 7 mars 2024. Vous avez des droits — utilisez-les.
+      </div>
+
+      {[
+        { n:1, t:'Appeler la hotline psychologue', s:'Anonyme · 7j/7 · 0800 000 000 · réponse <48h' },
+        { n:2, t:'Demander une visite médecin du travail', s:'Droit garanti sans accord employeur (Art. R4624-34)' },
+        { n:3, t:'Consulter mes droits CPAM', s:'Procédure maladie professionnelle CERFA n°60-3950' },
+        { n:4, t:'Activer un suivi avec un psychologue', s:'Téléconsultation prise en charge à 100%' },
+      ].map(a => (
+        <Card key={a.n} className="p-4 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm">{a.n}</div>
+          <div className="flex-1">
+            <div className="font-bold text-sm">{a.t}</div>
+            <div className="text-xs text-gray-500 mt-0.5">{a.s}</div>
+          </div>
+          <div className="text-gray-300">›</div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function SalResources() {
+  const tabs = [{id:'self',l:'Pour moi'},{id:'urg',l:'Urgence'},{id:'rights',l:'Droits'}];
+  const [t, setT] = useState('self');
+  const cards = {
+    self: [
+      { i:'🧘', t:'Méditation guidée anti-burnout', d:'Programme 7 jours · 10 min/jour · validé INSERM', tag:'Audio · 7 jours', c:'brand' },
+      { i:'📔', t:'Journal émotionnel privé', d:'Notez vos émotions. L\'IA détecte vos patterns de stress.', tag:'Privé · Chiffré', c:'ok' },
+      { i:'🎧', t:'Techniques de respiration', d:'Cohérence cardiaque · 3 sessions/jour · 5 min', tag:'Audio', c:'brand' },
+    ],
+    urg: [
+      { i:'☎️', t:'Hotline MindWork — psychologue', d:'Anonyme · 7j/7 · réponse sous 48h', tag:'Urgence', c:'danger' },
+      { i:'🆘', t:'3114 — Numéro national prévention suicide', d:'Gratuit · 24h/24 · personnel formé', tag:'Public · gratuit', c:'danger' },
+    ],
+    rights: [
+      { i:'⚖️', t:'Procédure CPAM — Maladie professionnelle', d:'CERFA 60-3950 · délais 15 jours · CRRMP', tag:'Guide pratique', c:'warn' },
+      { i:'🏥', t:'Demande médecin du travail', d:'Visite spontanée — droit garanti sans accord employeur', tag:'Contact direct', c:'brand' },
+      { i:'📜', t:'Cass. soc. 7 mars 2024 (n°22-19.426)', d:'L\'employeur est désormais présumé responsable.', tag:'Jurisprudence', c:'warn' },
+    ],
+  };
+  return (
+    <div className="fadein">
+      <div className="mb-1">
+        <h1 className="font-display text-2xl font-bold">Mes ressources</h1>
+        <div className="text-xs text-gray-500 mt-0.5">Sélectionnées par l'IA selon votre profil</div>
+      </div>
+      <div className="flex gap-2 my-4 border-b border-gray-200">
+        {tabs.map(x => (
+          <button key={x.id} onClick={()=>setT(x.id)}
+            className={`px-3 py-2 text-sm font-semibold border-b-2 -mb-px ${t===x.id?'border-brand-600 text-brand-700':'border-transparent text-gray-500'}`}>{x.l}</button>
+        ))}
+      </div>
+      <div className="space-y-3">
+        {cards[t].map((c,i) => (
+          <Card key={i} className="p-4 flex gap-3">
+            <div className="text-2xl">{c.i}</div>
+            <div className="flex-1">
+              <div className="font-bold text-sm">{c.t}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{c.d}</div>
+              <Pill color={c.c}>{c.tag}</Pill>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SalProfile() {
+  const { state } = useApp();
+  const me = state.user.me;
+  const last = state.myAnswers[state.myAnswers.length-1];
+  const lvl = scoreLevel(last.score);
+  return (
+    <div className="fadein">
+      <div className="text-center pt-2 pb-4">
+        <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-brand-600 to-accent text-white font-display font-black text-2xl flex items-center justify-center">{me.initials}</div>
+        <div className="font-display text-xl font-bold mt-3">{me.name}</div>
+        <div className="text-xs text-gray-500 mt-1">{me.role} · {me.tenure} · {me.team}</div>
+      </div>
+
+      <div className="flex justify-center my-4">
+        <div>
+          <div className="w-36 h-36 rounded-full ring-gradient flex items-center justify-center" style={{ '--g':lvl.hex, '--p':`${last.score}%` }}>
+            <div className="bg-white w-28 h-28 rounded-full flex items-center justify-center">
+              <div className="text-center">
+                <div className={`font-display text-3xl font-bold ${lvl.text}`}>{last.score}</div>
+                <div className="text-[10px] text-gray-500">/100</div>
+              </div>
+            </div>
+          </div>
+          <div className="text-center text-xs text-gray-500 mt-2">Score bien-être {last.week}</div>
+        </div>
+      </div>
+
+      <div className="font-bold text-sm mb-2">Historique (8 semaines)</div>
+      <div className="space-y-1.5">
+        {state.myAnswers.map((a,i) => {
+          const l = scoreLevel(a.score);
+          const w = `${a.score}%`;
+          const isLast = i===state.myAnswers.length-1;
+          return (
+            <div key={i} className="flex items-center gap-3 py-1.5 border-b border-gray-100 last:border-0">
+              <div className={`text-xs ${isLast?'font-bold':''} text-gray-500 w-10`}>{a.week}</div>
+              <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width:w, backgroundColor:l.hex }} />
+              </div>
+              <div className={`text-xs font-bold w-8 text-right`} style={{ color:l.hex }}>{a.score}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="bg-brand-50 border border-brand-100 rounded-xl p-3 text-[11px] text-brand-800 mt-5">
+        🔒 Votre historique personnel est uniquement visible par vous. Il n'est jamais communiqué à votre employeur ou à vos collègues.
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   9. MANAGER VIEW
+===================================================================== */
+function ManagerView() {
+  const { state } = useApp();
+  const [tab, setTab] = useState('overview');
+  // Le manager voit l'équipe Production
+  const myTeam = state.teams.find(t => t.id==='prod');
+  const hist = state.history.prod;
+  const last = hist[hist.length-1];
+  const lvl = scoreLevel(last.score);
+
+  const items = [
+    { id:'overview', icon:'📊', label:'Mon équipe' },
+    { id:'ripple',   icon:'🌊', label:'RIPPLE', badge: state.ripple.filter(r => r.target==='Manager').length },
+    { id:'plan',     icon:'🎯', label:"Plan d'action" },
+    { id:'resources',icon:'📚', label:'Ressources manager' },
+  ];
+
+  return (
+    <Shell sidebar={<Sidebar items={items} current={tab} onChange={setTab} />}>
+      {tab==='overview' && (
+        <div className="space-y-6 fadein">
+          <SectionTitle kicker="Ma vue manager" title={`Équipe ${myTeam.name} (${myTeam.size} personnes)`}
+            action={<Pill color="brand">Anonymat préservé · agrégation ≥5</Pill>} />
+
+          <div className="grid md:grid-cols-4 gap-4">
+            <Stat label={`Score ${last.week}`} value={last.score} sub={lvl.label} tone={lvl.label==='Vert'?'ok':lvl.label==='Orange'?'warn':'danger'} />
+            <Stat label="Tendance 4 sem." value={`${last.score-hist[hist.length-5].score>0?'+':''}${last.score-hist[hist.length-5].score}`} sub="vs S12" />
+            <Stat label="Participation" value="86%" sub="12/14 répondants" tone="brand" />
+            <Stat label="Alertes actives" value="2" sub="à traiter" tone="danger" />
+          </div>
+
+          <Card className="p-6">
+            <div className="font-display text-lg font-bold mb-4">Évolution du score d'équipe</div>
+            <div style={{ width:'100%', height:240 }}>
+              <ResponsiveContainer>
+                <AreaChart data={hist}>
+                  <defs>
+                    <linearGradient id="gradTeam" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.4}/>
+                      <stop offset="100%" stopColor="#4F46E5" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="week" stroke="#6B7280" fontSize={12} />
+                  <YAxis domain={[0,100]} stroke="#6B7280" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+                  <Area type="monotone" dataKey="score" stroke="#4F46E5" strokeWidth={2.5} fill="url(#gradTeam)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <div className="font-display text-lg font-bold mb-3">Signaux faibles détectés</div>
+              <ul className="space-y-3">
+                <li className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-danger mt-2"/>
+                  <div>
+                    <div className="font-semibold text-sm">Charge de travail perçue comme excessive</div>
+                    <div className="text-xs text-gray-500">7 répondants /14 sur les 3 dernières semaines</div>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-warn mt-2"/>
+                  <div>
+                    <div className="font-semibold text-sm">Sommeil dégradé lié au travail</div>
+                    <div className="text-xs text-gray-500">5 répondants /14 — corrélé avec heures sup. déclarées</div>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-warn mt-2"/>
+                  <div>
+                    <div className="font-semibold text-sm">Sentiment d'utilité en baisse (MBI-EP)</div>
+                    <div className="text-xs text-gray-500">Score moyen passé de 3.2 à 2.4 en 6 semaines</div>
+                  </div>
+                </li>
+              </ul>
+            </Card>
+
+            <Card className="p-6">
+              <div className="font-display text-lg font-bold mb-3">Actions recommandées par l'IA</div>
+              <ul className="space-y-3 text-sm">
+                <li className="flex gap-2"><span>1.</span> Programmer un atelier RIPPLE "Charge mentale" cette semaine</li>
+                <li className="flex gap-2"><span>2.</span> Tenir un point d'équipe pour redistribuer les priorités</li>
+                <li className="flex gap-2"><span>3.</span> Compléter votre formation "Reconnaître les signaux faibles" (12 min)</li>
+                <li className="flex gap-2"><span>4.</span> Notifier la DRH pour suivi formel (DUERP)</li>
+              </ul>
+              <button className="mt-5 w-full bg-ink text-white font-semibold py-2.5 rounded-lg text-sm">Générer un plan d'action</button>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {tab==='ripple' && <RippleCatalog forRole="Manager" />}
+
+      {tab==='plan' && (
+        <div className="fadein">
+          <SectionTitle kicker="Mon plan d'action" title="Plan d'action équipe Production" />
+          <Card className="p-6">
+            <ol className="space-y-4">
+              {[
+                { d:'S15', t:'Atelier RIPPLE — Charge mentale', who:'Tous (1h)', st:'Programmé' },
+                { d:'S16', t:'Point hebdo redistribution priorités', who:'Manager + équipe', st:'En cours' },
+                { d:'S17', t:'Formation "Manager Protecteur"', who:'Pierre Dumont', st:'À faire' },
+                { d:'S18', t:'Bilan SENTINEL avec DRH', who:'Manager + DRH', st:'Planifié' },
+              ].map((a,i) => (
+                <li key={i} className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                  <div className="w-12 text-xs font-bold text-brand-700">{a.d}</div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-sm">{a.t}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{a.who}</div>
+                  </div>
+                  <Pill color={a.st==='En cours'?'warn':a.st==='Programmé'?'brand':'gray'}>{a.st}</Pill>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </div>
+      )}
+
+      {tab==='resources' && (
+        <div className="fadein">
+          <SectionTitle kicker="Boîte à outils" title="Ressources manager" />
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              { i:'📘', t:'Guide INRS — Manager protecteur', d:'40 pages · PDF' },
+              { i:'🎬', t:'Webinaire ANACT QVCT', d:'45 min · replay' },
+              { i:'📋', t:'Trame entretien retour après arrêt', d:'Modèle Word' },
+              { i:'⚖️', t:'Cadre légal — Art. L.4121 expliqué', d:'Fiche juridique' },
+            ].map((r,i) => (
+              <Card key={i} className="p-5 flex gap-3">
+                <div className="text-3xl">{r.i}</div>
+                <div>
+                  <div className="font-bold">{r.t}</div>
+                  <div className="text-xs text-gray-500 mt-1">{r.d}</div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </Shell>
+  );
+}
+
+function RippleCatalog({ forRole=null }) {
+  const { state } = useApp();
+  const list = forRole ? state.ripple.filter(r => r.target===forRole || r.target==='Tous') : state.ripple;
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Module RIPPLE" title="Catalogue micro-formations"
+        action={<Pill color="brand">{list.length} formations</Pill>} />
+      <div className="grid md:grid-cols-2 gap-4">
+        {list.map(r => {
+          const pct = Math.round((r.completed/r.total)*100);
+          return (
+            <Card key={r.id} className="p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <Pill color={r.target==='Manager'?'brand':r.target==='Élu CSE'?'warn':'gray'}>{r.target}</Pill>
+                  <div className="font-display font-bold mt-2 text-lg leading-snug">{r.title}</div>
+                  <div className="text-xs text-gray-500 mt-1">{r.format} · {r.duration} min</div>
+                </div>
+                <button className="bg-ink text-white text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap">Démarrer</button>
+              </div>
+              <div className="mt-4">
+                <div className="flex justify-between text-[11px] text-gray-500 mb-1">
+                  <span>Adoption</span>
+                  <span>{r.completed}/{r.total} ({pct}%)</span>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-brand-600 to-accent" style={{ width:`${pct}%` }} />
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   10. RH VIEW
+===================================================================== */
+function RHView() {
+  const { state } = useApp();
+  const [tab, setTab] = useState('home');
+
+  const items = [
+    { id:'home',     icon:'📊', label:'Vue d\'ensemble' },
+    { id:'teams',    icon:'👥', label:'Équipes' },
+    { id:'alerts',   icon:'🚨', label:'Alertes', badge: 2 },
+    { id:'ripple',   icon:'🌊', label:'RIPPLE' },
+    { id:'cse',      icon:'📋', label:'Rapport CSE' },
+    { id:'roi',      icon:'💰', label:'ROI' },
+  ];
+
+  // Compute global aggregates
+  const teamScores = state.teams.map(t => {
+    const h = state.history[t.id];
+    return { ...t, score: h[h.length-1].score };
+  });
+  const globalScore = Math.round(teamScores.reduce((a,b) => a+b.score, 0) / teamScores.length);
+  const globalLvl = scoreLevel(globalScore);
+
+  return (
+    <Shell sidebar={<Sidebar items={items} current={tab} onChange={setTab} />}>
+      {tab==='home' && <RHHome global={globalScore} lvl={globalLvl} teamScores={teamScores} />}
+      {tab==='teams' && <RHTeams teamScores={teamScores} />}
+      {tab==='alerts' && <RHAlerts />}
+      {tab==='ripple' && <RippleCatalog />}
+      {tab==='cse' && <RHCSEReport />}
+      {tab==='roi' && <RHROI />}
+    </Shell>
+  );
+}
+
+function RHHome({ global, lvl, teamScores }) {
+  const { state } = useApp();
+  // historique global = moyenne par semaine
+  const globalHist = WEEKS.map((w, i) => ({
+    week: w,
+    score: Math.round(state.teams.reduce((a, t) => a + state.history[t.id][i].score, 0) / state.teams.length),
+  }));
+
+  return (
+    <div className="space-y-6 fadein">
+      <SectionTitle kicker="Tableau de bord" title="Vue d'ensemble RPS"
+        action={<div className="flex gap-2">
+          <Pill color="ink">Semaine {state.campaignWeek}</Pill>
+          <Pill color="brand">DUERP à jour</Pill>
+        </div>} />
+
+      <div className="grid md:grid-cols-4 gap-4">
+        <Stat label="Score global" value={global} sub={lvl.label} tone={lvl.label==='Vert'?'ok':lvl.label==='Orange'?'warn':'danger'} />
+        <Stat label="Salariés couverts" value={state.company.employees} sub="42/42 (100%)" tone="brand" />
+        <Stat label="Participation" value="83%" sub="35/42 répondants S15" />
+        <Stat label="Alertes ouvertes" value="2" sub="dont 1 critique" tone="danger" />
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        <Card className="p-6 lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <div className="font-display text-lg font-bold">Évolution du score collectif (8 semaines)</div>
+            <Pill color="gray">Anonymisé</Pill>
+          </div>
+          <div style={{ width:'100%', height:260 }}>
+            <ResponsiveContainer>
+              <LineChart data={globalHist}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis dataKey="week" stroke="#6B7280" fontSize={12} />
+                <YAxis domain={[40,100]} stroke="#6B7280" fontSize={12} />
+                <Tooltip contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+                <Line type="monotone" dataKey="score" stroke="#4F46E5" strokeWidth={3} dot={{ r:4, fill:'#4F46E5' }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="font-display text-lg font-bold mb-4">Répartition par niveau</div>
+          <div style={{ width:'100%', height:200 }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie data={[
+                  { name:'Vert',   value: teamScores.filter(t=>t.score>=70).reduce((a,b)=>a+b.size,0), fill:'#16A34A' },
+                  { name:'Orange', value: teamScores.filter(t=>t.score>=50&&t.score<70).reduce((a,b)=>a+b.size,0), fill:'#D97706' },
+                  { name:'Rouge',  value: teamScores.filter(t=>t.score<50).reduce((a,b)=>a+b.size,0), fill:'#DC2626' },
+                ]} dataKey="value" innerRadius={50} outerRadius={80} paddingAngle={2}>
+                </Pie>
+                <Tooltip />
+                <Legend iconSize={8} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-display text-lg font-bold">Score par équipe (semaine en cours)</div>
+          <button className="text-xs text-brand-700 font-semibold hover:underline">Exporter CSV</button>
+        </div>
+        <div style={{ width:'100%', height:260 }}>
+          <ResponsiveContainer>
+            <BarChart data={teamScores} layout="vertical" margin={{ left:20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis type="number" domain={[0,100]} stroke="#6B7280" fontSize={12} />
+              <YAxis type="category" dataKey="name" stroke="#6B7280" fontSize={12} width={130} />
+              <Tooltip contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+              <Bar dataKey="score" radius={[0,8,8,0]}>
+                {teamScores.map((t,i) => (
+                  <Cell key={i} fill={scoreLevel(t.score).hex} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function RHTeams({ teamScores }) {
+  const { state } = useApp();
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Équipes" title="Détail par unité de travail" />
+      <div className="grid md:grid-cols-2 gap-4">
+        {teamScores.map(t => {
+          const h = state.history[t.id];
+          const lvl = scoreLevel(t.score);
+          const trend = h[h.length-1].score - h[h.length-5].score;
+          return (
+            <Card key={t.id} className="p-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="font-display text-lg font-bold">{t.name}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{t.size} salariés</div>
+                </div>
+                <div className="text-right">
+                  <div className={`font-display text-3xl font-bold ${lvl.text}`}>{t.score}</div>
+                  <div className={`text-xs font-semibold ${trend>=0?'text-ok':'text-danger'}`}>{trend>=0?'↑':'↓'} {Math.abs(trend)} pts</div>
+                </div>
+              </div>
+              <div style={{ width:'100%', height:80 }} className="mt-2">
+                <ResponsiveContainer>
+                  <LineChart data={h}>
+                    <Line type="monotone" dataKey="score" stroke={lvl.hex} strokeWidth={2} dot={false} />
+                    <YAxis hide domain={[40,100]} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <Pill color={lvl.label==='Vert'?'ok':lvl.label==='Orange'?'warn':'danger'}>{lvl.label}</Pill>
+                <button className="text-brand-700 font-semibold hover:underline">Voir détail →</button>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function RHAlerts() {
+  const alerts = [
+    {
+      id:'a1', level:'Critique', team:"Bureau d'études", week:'S15',
+      title:'Score collectif < 50 (3 semaines consécutives)',
+      desc:'7 répondants sur 9 signalent des tensions interpersonnelles. Restructuration D&S identifiée comme facteur déclenchant. Médecin du travail informé.',
+      actions:['Médiation collective S17 ✓ programmée','Atelier RIPPLE déployé','DUERP mis à jour automatiquement']
+    },
+    {
+      id:'a2', level:'Élevé', team:'Production', week:'S15',
+      title:'Dégradation continue depuis S11 (-14 pts)',
+      desc:'Cadence record liée à objectif Airbus 870 avions/an. Heures supplémentaires en hausse de 23%.',
+      actions:['Audit charge mensuel ✓','Atelier "Charge mentale" S15','Revue plannings S16']
+    },
+  ];
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Alertes" title="Alertes ouvertes" />
+      <div className="space-y-4">
+        {alerts.map(a => (
+          <Card key={a.id} className={`p-6 border-l-4 ${a.level==='Critique'?'border-l-danger':'border-l-warn'}`}>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Pill color={a.level==='Critique'?'danger':'warn'}>● {a.level}</Pill>
+                  <span className="text-xs text-gray-500">{a.team} · détectée {a.week}</span>
+                </div>
+                <div className="font-display text-lg font-bold mt-2">{a.title}</div>
+                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{a.desc}</p>
+              </div>
+              <button className="text-xs text-brand-700 font-semibold hover:underline whitespace-nowrap">Marquer traitée</button>
+            </div>
+            <div className="border-t border-gray-100 pt-3">
+              <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-2">Actions en cours</div>
+              <ul className="space-y-1.5">
+                {a.actions.map((act,i) => (
+                  <li key={i} className="flex gap-2 text-sm"><span className="text-ok">✓</span> {act}</li>
+                ))}
+              </ul>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RHCSEReport() {
+  const { state } = useApp();
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Module SHIELD" title="Rapport CSE — Avril 2026"
+        action={<div className="flex gap-2">
+          <button className="text-xs px-3 py-2 rounded-lg border border-gray-200 hover:bg-white">Aperçu PDF</button>
+          <button className="text-xs px-3 py-2 rounded-lg bg-ink text-white font-semibold">Générer & envoyer</button>
+        </div>} />
+
+      <Card className="p-8 max-w-3xl">
+        <div className="border-b border-gray-200 pb-4 mb-6">
+          <Logo small />
+          <div className="text-xs text-gray-500 mt-2">Rapport mensuel de prévention RPS · Article L.2312-9 du Code du travail</div>
+        </div>
+
+        <h3 className="font-display text-2xl font-bold mb-1">Rapport CSE — Période : avril 2026</h3>
+        <div className="text-sm text-gray-600 mb-6">{state.company.name} · SIRET {state.company.siret} · {state.company.employees} salariés</div>
+
+        <section className="mb-6">
+          <h4 className="font-display font-bold text-base mb-2">1. Indicateurs clés</h4>
+          <table className="w-full text-sm">
+            <tbody>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Taux de participation SENTINEL</td><td className="py-2 text-right font-semibold">83%</td></tr>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Score moyen (8 semaines)</td><td className="py-2 text-right font-semibold">66 / 100</td></tr>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Équipes en alerte rouge</td><td className="py-2 text-right font-semibold text-danger">1 (Bureau d'études)</td></tr>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Équipes en alerte orange</td><td className="py-2 text-right font-semibold text-warn">2 (Production, Qualité)</td></tr>
+              <tr><td className="py-2 text-gray-600">Risques RPS identifiés au DUERP</td><td className="py-2 text-right font-semibold">{state.duerpRisks.length}</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section className="mb-6">
+          <h4 className="font-display font-bold text-base mb-2">2. Actions de prévention engagées</h4>
+          <ul className="space-y-1.5 text-sm">
+            <li>• 4 ateliers RIPPLE déployés ce mois (charge mentale, communication non-violente, déconnexion)</li>
+            <li>• Programme "Manager Protecteur" lancé pour 6 managers</li>
+            <li>• Médiation collective programmée Bureau d'études S17</li>
+            <li>• 3 visites médicales spontanées initiées via la plateforme</li>
+          </ul>
+        </section>
+
+        <section className="mb-6">
+          <h4 className="font-display font-bold text-base mb-2">3. Mise à jour du DUERP</h4>
+          <p className="text-sm text-gray-700 leading-relaxed">Le Document Unique a été mis à jour automatiquement le 14/04/2026 suite à l'identification d'un nouveau risque (charge de travail excessive en Production). Les mesures de prévention associées sont consignées et tracées (voir audit SHIELD).</p>
+        </section>
+
+        <section className="mb-2">
+          <h4 className="font-display font-bold text-base mb-2">4. Prochaines échéances</h4>
+          <ul className="space-y-1.5 text-sm">
+            <li>• Bilan trimestriel CSE : 15 mai 2026</li>
+            <li>• Semaine QVCT nationale : 15-19 juin 2026</li>
+            <li>• Mise à jour annuelle DUERP : 31 mars 2027</li>
+          </ul>
+        </section>
+
+        <div className="border-t border-gray-200 mt-6 pt-4 text-[10px] text-gray-500">
+          Rapport généré automatiquement par MindWork SHIELD · Hash de validation : f7a3c9d2e8b14056 · Conforme RGPD (art. 32) et HDS.
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function RHROI() {
+  const data = [
+    { mois:'M1', invest:1000, eco:0 },
+    { mois:'M2', invest:2000, eco:0 },
+    { mois:'M3', invest:3000, eco:1500 },
+    { mois:'M4', invest:4000, eco:4500 },
+    { mois:'M5', invest:5000, eco:9000 },
+    { mois:'M6', invest:6000, eco:15000 },
+    { mois:'M7', invest:7000, eco:22000 },
+    { mois:'M8', invest:8000, eco:30000 },
+    { mois:'M9', invest:9000, eco:40000 },
+    { mois:'M10', invest:10000, eco:51000 },
+    { mois:'M11', invest:11000, eco:63000 },
+    { mois:'M12', invest:12000, eco:76000 },
+  ];
+  return (
+    <div className="fadein space-y-6">
+      <SectionTitle kicker="Retour sur investissement" title="ROI MindWork — projection 12 mois" />
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <Stat label="Investissement annuel" value="12 600 €" sub="42 sal × 25€ × 12 mois" tone="ink" />
+        <Stat label="Économies estimées" value="76 000 €" sub="2 arrêts longs évités" tone="ok" />
+        <Stat label="ROI" value="x6" sub="Payback : 4 mois" tone="brand" />
+      </div>
+
+      <Card className="p-6">
+        <div className="font-display text-lg font-bold mb-4">Investissement vs économies cumulées</div>
+        <div style={{ width:'100%', height:280 }}>
+          <ResponsiveContainer>
+            <AreaChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis dataKey="mois" stroke="#6B7280" fontSize={12} />
+              <YAxis stroke="#6B7280" fontSize={12} tickFormatter={v=>`${v/1000}k`} />
+              <Tooltip formatter={v => `${v.toLocaleString('fr')} €`} contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+              <Area type="monotone" dataKey="invest" stroke="#94A3B8" fill="#E5E7EB" name="Investissement" />
+              <Area type="monotone" dataKey="eco" stroke="#16A34A" fill="#BBF7D0" name="Économies" />
+              <Legend />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      <Card className="p-6 bg-brand-50 border-brand-200">
+        <div className="font-display text-lg font-bold text-brand-900">Hypothèses de calcul</div>
+        <ul className="text-sm text-brand-900 mt-2 space-y-1 leading-relaxed">
+          <li>• Coût moyen d'un arrêt long lié au burnout : 45 000 € (source WTW 2025)</li>
+          <li>• Réduction de l'absentéisme attendue : -30% (benchmark sectoriel pilotes 2025)</li>
+          <li>• Hypothèse conservatrice : 2 arrêts évités sur 12 mois pour 42 salariés</li>
+          <li>• Économie marginale non comptée : turnover, recrutement, perte de compétences clés</li>
+        </ul>
+      </Card>
+    </div>
+  );
+}
+
+/* =====================================================================
+   11. ADMIN DUERP VIEW
+===================================================================== */
+function AdminView() {
+  const [tab, setTab] = useState('duerp');
+  const items = [
+    { id:'duerp',  icon:'📄', label:'DUERP' },
+    { id:'audit',  icon:'🔐', label:'Audit trail' },
+    { id:'legal',  icon:'⚖️', label:'Veille juridique' },
+    { id:'config', icon:'⚙️', label:'Configuration' },
+  ];
+  return (
+    <Shell sidebar={<Sidebar items={items} current={tab} onChange={setTab} />}>
+      {tab==='duerp'  && <DUERP />}
+      {tab==='audit'  && <AuditTrail />}
+      {tab==='legal'  && <LegalWatch />}
+      {tab==='config' && <Config />}
+    </Shell>
+  );
+}
+
+function DUERP() {
+  const { state } = useApp();
+  return (
+    <div className="fadein space-y-6">
+      <SectionTitle kicker="Module SHIELD" title="Document Unique d'Évaluation des Risques (DUERP)"
+        action={<div className="flex gap-2">
+          <button className="text-xs px-3 py-2 rounded-lg border border-gray-200 hover:bg-white">Exporter PDF</button>
+          <button className="text-xs px-3 py-2 rounded-lg bg-ink text-white font-semibold">Mettre à jour</button>
+        </div>} />
+
+      <Card className="p-6">
+        <div className="grid md:grid-cols-3 gap-4 text-sm">
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Entreprise</div><div className="font-semibold">{state.company.name}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">SIRET</div><div className="font-semibold">{state.company.siret}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Convention</div><div className="font-semibold">{state.company.convCollective}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Effectif</div><div className="font-semibold">{state.company.employees} salariés</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Adresse</div><div className="font-semibold">{state.company.address}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Dernière mise à jour</div><div className="font-semibold text-ok">14/04/2026</div></div>
+        </div>
+      </Card>
+
+      <div>
+        <h3 className="font-display text-lg font-bold mb-3">Risques psychosociaux identifiés</h3>
+        <div className="space-y-3">
+          {state.duerpRisks.map(r => (
+            <Card key={r.id} className="p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-gray-400">{r.id.toUpperCase()}</span>
+                    <Pill color={r.level==='Élevé'?'danger':'warn'}>{r.level}</Pill>
+                    <span className="text-xs text-gray-500">{r.unit}</span>
+                  </div>
+                  <div className="font-display font-bold text-lg mt-2">{r.risk}</div>
+                  <div className="text-xs text-gray-500 mt-1">Source : {r.sources}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Score G×F</div>
+                  <div className={`font-display text-2xl font-bold ${r.level==='Élevé'?'text-danger':'text-warn'}`}>{r.score}</div>
+                  <div className="text-[10px] text-gray-500">G:{r.gravity} × F:{r.frequency}</div>
+                </div>
+              </div>
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-2">Mesures de prévention en place</div>
+                <ul className="space-y-1 text-sm">
+                  {r.measures.map((m,i) => <li key={i} className="flex gap-2"><span className="text-ok">✓</span> {m}</li>)}
+                </ul>
+                <div className="text-[10px] text-gray-400 mt-3">Dernière révision : {r.lastUpdate}</div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <Card className="p-5 bg-amber-50 border-amber-200">
+        <div className="flex gap-3">
+          <span className="text-2xl">⚖️</span>
+          <div className="text-sm text-amber-900 leading-relaxed">
+            <b>Conformité légale.</b> Ce DUERP est mis à jour automatiquement à chaque détection d'un nouveau risque par SENTINEL. Conforme à l'article L.4121-3 du Code du travail et au décret du 31 mars 2022. Constitue une preuve d'obligation de moyens en cas de contentieux (Cass. soc. 7 mars 2024, n°22-19.426).
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function AuditTrail() {
+  const { state } = useApp();
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Module SHIELD" title="Journal d'audit (preuves juridiques)" />
+      <Card className="overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr className="text-left text-[11px] uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3">Date / heure</th>
+              <th className="px-4 py-3">Acteur</th>
+              <th className="px-4 py-3">Action</th>
+              <th className="px-4 py-3">Hash</th>
+            </tr>
+          </thead>
+          <tbody>
+            {state.auditLog.map((l,i) => (
+              <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
+                <td className="px-4 py-3 text-gray-600">{l.date}</td>
+                <td className="px-4 py-3 font-semibold">{l.actor}</td>
+                <td className="px-4 py-3">{l.action}</td>
+                <td className="px-4 py-3 font-mono text-xs text-gray-400">{l.hash}…</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+      <div className="text-xs text-gray-500 mt-3">Tous les événements sont horodatés et hashés (SHA-256). Stockage HDS. Recevable comme preuve en justice.</div>
+    </div>
+  );
+}
+
+function LegalWatch() {
+  const items = [
+    { d:'2026-03', t:'Décret n°2026-241 — Renforcement obligations RPS pour PME <50 salariés', tag:'Nouveau', c:'danger' },
+    { d:'2026-01', t:'PLFSS 2026 — Article 51 prolongé jusqu\'à fin 2027', tag:'Opportunité', c:'ok' },
+    { d:'2025-11', t:'Grande cause nationale Santé Mentale prolongée 2026', tag:'Politique', c:'brand' },
+    { d:'2025-09', t:'Cass. soc. 18 sept. 2025 — Confirmation jurisprudence 7 mars 2024', tag:'Jurisprudence', c:'warn' },
+    { d:'2025-06', t:'ISO 45003 — Guide ANACT publié pour PME industrielles', tag:'Norme', c:'brand' },
+  ];
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Veille" title="Veille juridique RPS" />
+      <div className="space-y-2">
+        {items.map((x,i) => (
+          <Card key={i} className="p-4 flex items-center gap-4">
+            <div className="text-xs font-mono text-gray-400 w-16">{x.d}</div>
+            <div className="flex-1 font-semibold text-sm">{x.t}</div>
+            <Pill color={x.c}>{x.tag}</Pill>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Config() {
+  const { state, setState } = useApp();
+  const [name, setName] = useState(state.company.name);
+  const [emp, setEmp] = useState(state.company.employees);
+  const save = () => {
+    setState(prev => ({ ...prev, company: { ...prev.company, name, employees: parseInt(emp)||prev.company.employees }}));
+  };
+  return (
+    <div className="fadein max-w-2xl">
+      <SectionTitle kicker="Paramètres" title="Configuration de l'entreprise" />
+      <Card className="p-6 space-y-4">
+        <div>
+          <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Raison sociale</label>
+          <input value={name} onChange={e=>setName(e.target.value)} className="w-full mt-1.5 border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Effectif</label>
+          <input type="number" value={emp} onChange={e=>setEmp(e.target.value)} className="w-full mt-1.5 border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+        </div>
+        <button onClick={save} className="bg-ink text-white text-sm font-semibold px-4 py-2 rounded-lg">Enregistrer</button>
+        <div className="text-xs text-gray-500">Modifications enregistrées dans votre navigateur (localStorage).</div>
+      </Card>
+    </div>
+  );
+}
+
+/* =====================================================================
+   12. ROOT
+===================================================================== */
+function Root() {
+  const { role } = useApp();
+  if (!role) return <RoleSelect />;
+  if (role==='salarie') return <SalarieView />;
+  if (role==='manager') return <ManagerView />;
+  if (role==='rh')      return <RHView />;
+  if (role==='admin')   return <AdminView />;
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <AppProvider><Root /></AppProvider>
+);
+</script>
+</body>
+</html>
