@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindWork — One-pager</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f5f3ee;
+    color: #1a1332;
+    line-height: 1.45;
+    padding: 24px;
+  }
+  .sheet {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 32px 36px;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(26,19,50,0.08);
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 3px solid #3d2b7a;
+    margin-bottom: 20px;
+  }
+  .logo { font-size: 28px; font-weight: 800; color: #3d2b7a; letter-spacing: -0.5px; }
+  .logo span { color: #7c5cff; }
+  .tag { font-size: 11px; color: #6b5b9a; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1332;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .pitch { font-size: 14px; color: #4a3b6e; margin-bottom: 20px; }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .kpi {
+    background: linear-gradient(135deg, #3d2b7a 0%, #5a3fb8 100%);
+    color: #fff;
+    padding: 14px 10px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .kpi .num { font-size: 24px; font-weight: 800; display: block; }
+  .kpi .lbl { font-size: 10px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.5px; }
+  h2 {
+    font-size: 14px;
+    color: #3d2b7a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+  .roles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .role {
+    background: #f5f3ee;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 3px solid #7c5cff;
+  }
+  .role h3 { font-size: 13px; color: #1a1332; margin-bottom: 4px; }
+  .role p { font-size: 11px; color: #4a3b6e; line-height: 1.4; }
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    margin-bottom: 18px;
+  }
+  .feat { font-size: 12px; color: #2a2048; padding-left: 18px; position: relative; }
+  .feat::before { content: "✓"; color: #7c5cff; font-weight: 800; position: absolute; left: 0; }
+  .feat strong { color: #1a1332; }
+  .compliance {
+    background: #f5f3ee;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 12px;
+    color: #4a3b6e;
+    border-left: 3px solid #00a86b;
+  }
+  .compliance strong { color: #1a1332; }
+  footer {
+    border-top: 2px solid #e5ddd0;
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #6b5b9a;
+  }
+  footer a { color: #3d2b7a; font-weight: 700; text-decoration: none; }
+  .cta {
+    display: inline-block;
+    background: #3d2b7a;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 12px;
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .sheet { box-shadow: none; border-radius: 0; padding: 0; }
+  }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <div>
+        <div class="logo">Mind<span>Work</span></div>
+        <div class="tag">Plateforme santé mentale IA · PME industrielles</div>
+      </div>
+      <a class="cta" href="https://mindwork.cloud">mindwork.cloud →</a>
+    </header>
+
+    <h1>Prévention des RPS, conformité légale & ROI × 4,2 en 3 mois.</h1>
+    <p class="pitch">MindWork est la seule plateforme SaaS qui couple baromètre Sentinel anonyme, DUERP automatisé et rapport CSE légal — pour les PME industrielles de 50 à 500 salariés. Couverture article L4121-1 du Code du Travail, formations 100% OPCO, IA prescriptive temps réel.</p>
+
+    <div class="kpis">
+      <div class="kpi"><span class="num">× 4,2</span><span class="lbl">ROI 3 mois</span></div>
+      <div class="kpi"><span class="num">-18%</span><span class="lbl">Absentéisme</span></div>
+      <div class="kpi"><span class="num">81%</span><span class="lbl">Participation</span></div>
+      <div class="kpi"><span class="num">100%</span><span class="lbl">OPCO financé</span></div>
+    </div>
+
+    <h2>3 parcours métier</h2>
+    <div class="roles">
+      <div class="role">
+        <h3>👤 Salarié</h3>
+        <p>Questionnaire Sentinel anonyme · 5 questions · 90 sec · chaque lundi.</p>
+      </div>
+      <div class="role">
+        <h3>👥 Manager</h3>
+        <p>Vue agrégée équipe · micro-formations RIPPLE 3 min · zéro donnée individuelle.</p>
+      </div>
+      <div class="role">
+        <h3>📊 RH / DRH</h3>
+        <p>Dashboard global · alertes IA · plan d'actions · rapport CSE 1 clic.</p>
+      </div>
+    </div>
+
+    <h2>Ce que MindWork résout</h2>
+    <div class="features">
+      <div class="feat"><strong>Conformité L4121-1</strong> — obligation de prévention RPS couverte automatiquement.</div>
+      <div class="feat"><strong>Anonymat by design</strong> — chiffrement + agrégation IA, 81% d'adhésion salariés.</div>
+      <div class="feat"><strong>DUERP dynamique</strong> — mise à jour automatique des risques détectés.</div>
+      <div class="feat"><strong>Rapport CSE annuel</strong> — export PDF légal en 1 clic.</div>
+      <div class="feat"><strong>IA prescriptive</strong> — recommande l'action (atelier, formation, alerte) en temps réel.</div>
+      <div class="feat"><strong>Formations OPCO</strong> — ATLAS, AKTO, OPCO 2i · coût net entreprise = 0 €.</div>
+    </div>
+
+    <div class="compliance">
+      <strong>Conformité légale française.</strong> Article L4121-1 du Code du Travail · hébergement HDS en France · RGPD · conventions OPCO industrie · rapport CSE conforme Code du Travail.
+    </div>
+
+    <footer>
+      <div>
+        <strong>Aliya Arnous</strong> — Fondatrice MindWork<br>
+        aliyaarnous@icloud.com
+      </div>
+      <div style="text-align:right;">
+        Démo libre : <a href="https://mindwork.cloud">mindwork.cloud</a><br>
+        Aucun compte requis · 2 min de navigation
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
