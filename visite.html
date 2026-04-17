@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindWork — Guide de visite du site</title>
+  <meta name="description" content="Tutoriel pas à pas pour naviguer sur mindwork.cloud et comprendre chaque page du SaaS MindWork (prévention RPS, DUERP, baromètre anonyme).">
+  <meta property="og:title" content="MindWork — Guide de visite">
+  <meta property="og:description" content="Visite guidée du site MindWork : accueil, pitch, one-pager et démo. À envoyer aux prospects avec le lien.">
+  <meta property="og:url" content="https://mindwork.cloud/visite.html">
+  <meta property="og:type" content="website">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(180deg, #f5f3ee 0%, #ebe5d8 100%);
+      color: #1a1332;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .topbar {
+      background: #1a1332;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .topbar .logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .topbar .logo span { color: #a78bff; }
+    .topbar .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s;
+      display: inline-block;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: #a78bff; color: #1a1332; }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+    .container { max-width: 880px; margin: 0 auto; padding: 40px 24px 80px; }
+    .intro {
+      background: #fff;
+      padding: 36px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(26,19,50,0.08);
+      margin-bottom: 28px;
+    }
+    .intro .eyebrow {
+      display: inline-block;
+      background: #ede7ff;
+      color: #3d2b7a;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    h1 { font-size: 32px; line-height: 1.2; margin-bottom: 14px; color: #1a1332; }
+    h2 { font-size: 22px; margin-bottom: 10px; color: #3d2b7a; }
+    h3 { font-size: 16px; margin: 18px 0 8px; color: #1a1332; }
+    p { margin-bottom: 12px; color: #4a3b6e; }
+    .step {
+      background: #fff;
+      padding: 28px 32px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(26,19,50,0.06);
+      margin-bottom: 22px;
+      border-left: 4px solid #a78bff;
+    }
+    .step .step-num {
+      display: inline-block;
+      background: #3d2b7a;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 32px;
+      font-weight: 800;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+    .step-title-wrap { display: flex; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 6px; }
+    .step .url {
+      display: inline-block;
+      background: #1a1332;
+      color: #a78bff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: "SFMono-Regular", Menlo, monospace;
+      font-size: 13px;
+      text-decoration: none;
+      margin-left: 8px;
+    }
+    .step .url:hover { background: #3d2b7a; }
+    ul { margin: 8px 0 8px 22px; }
+    ul li { margin-bottom: 6px; color: #4a3b6e; }
+    .highlight {
+      background: #fff8dc;
+      padding: 14px 18px;
+      border-radius: 8px;
+      border-left: 3px solid #d4af37;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+    .cta-final {
+      background: linear-gradient(135deg, #3d2b7a 0%, #5a3fb8 100%);
+      color: #fff;
+      padding: 36px 40px;
+      border-radius: 16px;
+      text-align: center;
+      margin-top: 32px;
+    }
+    .cta-final h2 { color: #fff; }
+    .cta-final p { color: #e0d9ff; margin-bottom: 20px; }
+    .cta-final .btn { background: #fff; color: #3d2b7a; padding: 12px 24px; font-size: 15px; }
+    footer {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 24px;
+      text-align: center;
+      color: #6b5b8e;
+      font-size: 13px;
+    }
+    footer a { color: #3d2b7a; text-decoration: none; }
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px 60px; }
+      .intro, .step, .cta-final { padding: 22px 20px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="logo">Mind<span>Work</span></div>
+    <div class="actions">
+      <a class="btn btn-ghost" href="/">Accueil</a>
+      <a class="btn btn-ghost" href="/pitch.html">Pitch</a>
+      <a class="btn btn-ghost" href="/onepager.html">One-pager</a>
+      <a class="btn btn-primary" href="/">Essayer la démo →</a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="intro">
+      <span class="eyebrow">Guide de visite · 5 min de lecture</span>
+      <h1>Bienvenue sur MindWork 👋</h1>
+      <p>Merci de prendre le temps de découvrir notre SaaS. Ce guide vous accompagne pas à pas pour comprendre ce que vous voyez sur chaque page du site et de la démo, afin de vous faire une idée précise de la valeur que MindWork peut apporter à votre PME industrielle.</p>
+      <p><strong>MindWork en une phrase :</strong> la plateforme SaaS qui couple baromètre anonyme, DUERP automatisé et rapport CSE légal — pour prévenir les RPS (risques psychosociaux) en conformité avec l'article L4121-1 du Code du Travail.</p>
+      <div class="highlight">
+        <strong>💡 Conseil :</strong> ouvrez ce guide dans un onglet, et <a href="https://mindwork.cloud/" target="_blank">mindwork.cloud</a> dans un autre. Vous pourrez suivre la visite en direct.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title-wrap">
+        <span class="step-num">1</span>
+        <h2>L'accueil</h2>
+        <a class="url" href="/" target="_blank">mindwork.cloud</a>
+      </div>
+      <p>La page d'accueil sert à deux choses : <strong>comprendre en 10 secondes</strong> ce que fait MindWork, et <strong>lancer la démo</strong> sans créer de compte.</p>
+      <h3>Ce que vous voyez :</h3>
+      <ul>
+        <li><strong>Le hero</strong> : notre promesse principale — prévenir les RPS et rester conforme L4121-1 sans y passer ses journées.</li>
+        <li><strong>Les 3 modules clés</strong> : Baromètre anonyme · DUERP dynamique · Rapport CSE légal.</li>
+        <li><strong>Le bouton « Essayer la démo »</strong> : lance directement la simulation du dashboard (aucun compte requis, 2 minutes).</li>
+      </ul>
+      <h3>Ce que vous comprenez :</h3>
+      <p>MindWork couvre <strong>toute la chaîne RPS</strong>, de la mesure anonyme (salariés) jusqu'au rapport légal (CSE + inspection du travail), en passant par la mise à jour continue du DUERP.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-title-wrap">
+        <span class="step-num">2</span>
+        <h2>La démo interactive</h2>
+        <a class="url" href="/" target="_blank">mindwork.cloud (bouton Démo)</a>
+      </div>
+      <p>Depuis l'accueil, cliquez sur « Essayer la démo ». Vous arrivez dans un dashboard simulé avec des données fictives cohérentes.</p>
+      <h3>Ce que vous voyez :</h3>
+      <ul>
+        <li><strong>Mon baromètre</strong> : le score RPS de l'entreprise (0–100) et son évolution sur les 6 derniers mois.</li>
+        <li><strong>Mes ressources</strong> : bibliothèque de fiches pratiques ATLAS / AKTO / OPCO 2i (formations financées 0 € net).</li>
+        <li><strong>Rapport CSE</strong> : exemple de rapport mensuel prêt à transmettre en 1 clic (export PDF conforme).</li>
+        <li><strong>DUERP dynamique</strong> : la liste des risques psychosociaux détectés automatiquement, avec le niveau de criticité.</li>
+      </ul>
+      <h3>Ce que vous comprenez :</h3>
+      <p>En une démo de 2 minutes, vous saisissez le gain de temps réel : ce qu'un RH faisait en 3 jours par mois (questionnaires + compilation + rapport), MindWork le produit <strong>en continu et automatiquement</strong>, conforme à la réglementation.</p>
+      <div class="highlight">
+        <strong>🔒 Anonymat by design :</strong> aucune donnée salarié nominative n'est stockée. Les questionnaires sont chiffrés et agrégés par IA dès 81 % d'adhésion — ce qui garantit un taux de réponse élevé car les salariés se sentent en sécurité.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title-wrap">
+        <span class="step-num">3</span>
+        <h2>Le pitch en 2 minutes</h2>
+        <a class="url" href="/pitch.html" target="_blank">mindwork.cloud/pitch.html</a>
+      </div>
+      <p>Cette page est pensée pour les <strong>décideurs</strong> (DRH, CODIR, DAF) qui veulent les chiffres clés en un coup d'œil.</p>
+      <h3>Ce que vous voyez :</h3>
+      <ul>
+        <li><strong>Le problème</strong> : les RPS coûtent en moyenne 4 200 € par salarié / an en arrêts maladie, turnover et baisse de productivité.</li>
+        <li><strong>La solution</strong> : 3 modules intégrés, 0 friction côté salarié, conformité légale garantie.</li>
+        <li><strong>Le ROI</strong> : × 4,2 en 12 mois (économies arrêts + baisse turnover + crédits formation OPCO).</li>
+        <li><strong>La preuve légale</strong> : Article L4121-1 du Code du Travail · hébergement HDS en France · RGPD · rapport CSE conforme.</li>
+        <li><strong>L'équipe fondatrice</strong> : Aliya ARNOUS-BLAYO (CEO) et Maria GAROFALO-ESPAGNO (COO).</li>
+      </ul>
+      <h3>Ce que vous comprenez :</h3>
+      <p>Le pitch répond à la question « Pourquoi MindWork plutôt qu'un autre outil ? » en une page. Il est <strong>conçu pour être partagé</strong> à un CODIR ou un CSE.</p>
+    </div>
+
+    <div class="step">
+      <div class="step-title-wrap">
+        <span class="step-num">4</span>
+        <h2>Le one-pager imprimable</h2>
+        <a class="url" href="/onepager.html" target="_blank">mindwork.cloud/onepager.html</a>
+      </div>
+      <p>Un format A4 <strong>prêt à imprimer</strong>, pensé pour les réunions physiques, les dossiers Bpifrance, FEET (Feuille d'Évaluation Économique et Technique), ou tout appel à projets.</p>
+      <h3>Ce que vous voyez :</h3>
+      <ul>
+        <li>Tous les KPIs clés en haut de page (ROI, conformité, nombre de modules).</li>
+        <li>Les bénéfices classés par persona : DRH, CSE, Direction, Salarié.</li>
+        <li>Le bloc conformité légale (article, RGPD, HDS, OPCO).</li>
+        <li>Les coordonnées de l'équipe fondatrice pour un contact direct.</li>
+      </ul>
+      <h3>Ce que vous comprenez :</h3>
+      <p>C'est le format à <strong>imprimer et laisser sur le bureau</strong> d'un décideur après un rendez-vous. Ou à joindre à une candidature Bpifrance / French Tech.</p>
+      <div class="highlight">
+        <strong>📄 Astuce :</strong> pour exporter en PDF, ouvrez la page puis <kbd>Ctrl+P</kbd> (Windows/Linux) ou <kbd>Cmd+P</kbd> (Mac) → « Enregistrer au format PDF ». Les styles impression sont optimisés A4.
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-title-wrap">
+        <span class="step-num">5</span>
+        <h2>Prochaines étapes</h2>
+      </div>
+      <p>Une fois la visite terminée, voici ce que vous pouvez faire :</p>
+      <ul>
+        <li><strong>Tester la démo</strong> 2–3 minutes pour sentir l'ergonomie (aucun compte requis).</li>
+        <li><strong>Partager le lien</strong> à votre CSE ou votre DRH — la démo est publique.</li>
+        <li><strong>Demander un entretien</strong> de 20 minutes pour qu'on adapte MindWork à votre contexte industriel.</li>
+        <li><strong>Intégrer le pilote</strong> : 30 jours gratuits, accompagnement dédié, mise en conformité L4121-1 garantie.</li>
+      </ul>
+    </div>
+
+    <div class="cta-final">
+      <h2>Prêt à parler ?</h2>
+      <p>Contactez directement l'équipe fondatrice — on répond sous 24 h ouvrées.</p>
+      <p>
+        <a class="btn" href="mailto:a.arnous@mindwork.cloud">a.arnous@mindwork.cloud</a>
+        &nbsp;
+        <a class="btn" href="mailto:m.garofalo@mindwork.cloud">m.garofalo@mindwork.cloud</a>
+      </p>
+      <p style="margin-top:18px;font-size:13px;">Ou : <a style="color:#fff;text-decoration:underline" href="mailto:contact@mindwork.cloud">contact@mindwork.cloud</a></p>
+    </div>
+
+  </div>
+
+  <footer>
+    MindWork · Aliya ARNOUS-BLAYO (CEO &amp; Fondatrice) &amp; Maria GAROFALO-ESPAGNO (COO &amp; Co-fondatrice) · Toulouse · 2026<br>
+    <a href="/">Retour à l'accueil</a> · <a href="/pitch.html">Voir le pitch</a> · <a href="/onepager.html">One-pager imprimable</a>
+  </footer>
+
+</body>
+           </html>
