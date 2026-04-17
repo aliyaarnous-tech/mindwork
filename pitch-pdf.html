@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindWork — Pitch (PDF imprimable)</title>
+  <meta name="description" content="Version imprimable PDF du pitch MindWork : SaaS prévention RPS, DUERP, baromètre anonyme pour PME industrielles.">
+  <meta property="og:title" content="MindWork — Pitch PDF">
+  <meta property="og:url" content="https://mindwork.cloud/pitch-pdf.html">
+  <style>
+    @page { size: A4; margin: 14mm; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      color: #1a1332;
+      background: #f5f3ee;
+      line-height: 1.4;
+      font-size: 11pt;
+    }
+    .sheet {
+      max-width: 780px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 28px 36px;
+      min-height: 100vh;
+    }
+    .print-cta {
+      max-width: 780px;
+      margin: 12px auto;
+      background: #3d2b7a;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13pt;
+    }
+    .print-cta button {
+      background: #a78bff;
+      color: #1a1332;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13pt;
+    }
+    .print-cta button:hover { background: #fff; }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 3px solid #3d2b7a;
+      padding-bottom: 10px;
+      margin-bottom: 18px;
+    }
+    .logo { font-size: 24pt; font-weight: 800; letter-spacing: -0.5px; color: #1a1332; }
+    .logo span { color: #7c5cff; }
+    .tag {
+      background: #ede7ff;
+      color: #3d2b7a;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 18pt;
+      line-height: 1.2;
+      margin: 8px 0 6px;
+      color: #1a1332;
+    }
+    .pitch {
+      font-size: 11pt;
+      color: #4a3b6e;
+      margin-bottom: 14px;
+    }
+    h2 {
+      font-size: 12pt;
+      color: #3d2b7a;
+      margin: 12px 0 6px;
+      border-left: 3px solid #7c5cff;
+      padding-left: 8px;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: linear-gradient(135deg, #3d2b7a 0%, #5a3fb8 100%);
+      color: #fff;
+      padding: 10px 8px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .kpi .num { font-size: 18pt; font-weight: 800; line-height: 1; }
+    .kpi .lbl { font-size: 8pt; margin-top: 3px; opacity: 0.9; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 10px; }
+    .card {
+      background: #f8f5ff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border-left: 3px solid #7c5cff;
+    }
+    .card h3 { font-size: 10pt; color: #1a1332; margin-bottom: 4px; }
+    .card ul { padding-left: 14px; margin-top: 4px; }
+    .card li { font-size: 9.5pt; color: #4a3b6e; margin-bottom: 2px; }
+    .feats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; margin-bottom: 10px; }
+    .feat { font-size: 9.5pt; color: #4a3b6e; }
+    .feat strong { color: #1a1332; }
+    .compliance {
+      background: #fff8dc;
+      border-left: 3px solid #d4af37;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 9.5pt;
+      color: #4a3b6e;
+      margin-bottom: 12px;
+    }
+    .compliance strong { color: #1a1332; }
+    footer {
+      border-top: 2px solid #3d2b7a;
+      padding-top: 8px;
+      margin-top: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 9pt;
+      color: #4a3b6e;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    footer strong { color: #1a1332; }
+    footer a { color: #3d2b7a; text-decoration: none; }
+    .founders-footer { flex: 1; }
+    .cta-footer {
+      background: #3d2b7a;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 9pt;
+    }
+    .cta-footer a { color: #fff; }
+    @media print {
+      body { background: #fff; }
+      .sheet { box-shadow: none; padding: 0; max-width: 100%; }
+      .print-cta { display: none; }
+      .kpi { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card, .compliance { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-cta">
+    <span>📄 Version imprimable A4 du pitch MindWork</span>
+    <button onclick="window.print()">Imprimer / Enregistrer en PDF</button>
+  </div>
+
+  <div class="sheet">
+
+    <div class="head">
+      <div>
+        <div class="logo">Mind<span>Work</span></div>
+        <div class="tag">Prévention RPS · PME industrielles · Conformité L4121-1</div>
+      </div>
+      <div style="text-align:right;font-size:8pt;color:#6b5b8e">
+        mindwork.cloud · Toulouse · 2026
+      </div>
+    </div>
+
+    <h1>Le SaaS qui prévient les risques psychosociaux et sécurise la conformité CSE — sans charge de travail supplémentaire.</h1>
+    <p class="pitch">MindWork couple <strong>baromètre anonyme chiffré</strong>, <strong>DUERP dynamique</strong> et <strong>rapport CSE légal</strong> en une plateforme intégrée. Pensé pour les PME industrielles françaises (50-500 salariés).</p>
+
+    <div class="kpis">
+      <div class="kpi"><div class="num">×4,2</div><div class="lbl">ROI en 12 mois</div></div>
+      <div class="kpi"><div class="num">100%</div><div class="lbl">OPCO éligible</div></div>
+      <div class="kpi"><div class="num">81%</div><div class="lbl">adhésion salariés</div></div>
+      <div class="kpi"><div class="num">0€</div><div class="lbl">net avec OPCO</div></div>
+    </div>
+
+    <h2>Le problème</h2>
+    <p class="pitch">Les RPS coûtent en moyenne <strong>4 200 € par salarié / an</strong> (arrêts maladie, turnover, baisse de productivité). Or la majorité des PME industrielles n'ont ni temps ni outil pour mesurer, documenter et agir — tout en restant conformes au Code du Travail (art. L4121-1).</p>
+
+    <h2>La solution — 3 modules intégrés</h2>
+    <div class="feats">
+      <div class="feat"><strong>Baromètre anonyme</strong> — chiffrement + agrégation IA, 81% d'adhésion salariés.</div>
+      <div class="feat"><strong>DUERP dynamique</strong> — mise à jour automatique des risques détectés.</div>
+      <div class="feat"><strong>Rapport CSE annuel</strong> — export PDF légal en 1 clic.</div>
+      <div class="feat"><strong>IA prescriptive</strong> — recommande l'action à mener en temps réel.</div>
+      <div class="feat"><strong>Formations OPCO</strong> — ATLAS, AKTO, OPCO 2i · coût net = 0 €.</div>
+      <div class="feat"><strong>Conformité L4121-1</strong> — obligation légale couverte automatiquement.</div>
+    </div>
+
+    <h2>Pour qui, quels bénéfices</h2>
+    <div class="row">
+      <div class="card">
+        <h3>Direction / DRH</h3>
+        <ul>
+          <li>Conformité CSE garantie, 0 risque prud'homal.</li>
+          <li>Tableau de bord RPS temps réel.</li>
+          <li>Économies : -30% d'arrêts maladie en 12 mois.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>CSE / Représentants</h3>
+        <ul>
+          <li>Rapport mensuel automatique, clé en main.</li>
+          <li>Données anonymisées, non manipulables.</li>
+          <li>Historique consultable 5 ans.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Salariés</h3>
+        <ul>
+          <li>Questionnaire 2 min, anonymat total.</li>
+          <li>Accès ressources et formations OPCO.</li>
+          <li>Voix réellement prise en compte.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Inspection du travail</h3>
+        <ul>
+          <li>DUERP à jour en permanence.</li>
+          <li>Traçabilité complète des actions.</li>
+          <li>Conformité vérifiable en 1 clic.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="compliance">
+      <strong>✅ Cadre légal couvert :</strong> Article L4121-1 du Code du Travail · hébergement HDS en France · RGPD · conventions OPCO industrie · rapport CSE conforme · certification HDS sur la roadmap Q3 2026.
+    </div>
+
+    <footer>
+      <div class="founders-footer">
+        <strong>Équipe fondatrice</strong><br>
+        Aliya ARNOUS-BLAYO — CEO &amp; Fondatrice — <a href="mailto:a.arnous@mindwork.cloud">a.arnous@mindwork.cloud</a><br>
+        Maria GAROFALO-ESPAGNO — COO &amp; Co-fondatrice — <a href="mailto:m.garofalo@mindwork.cloud">m.garofalo@mindwork.cloud</a><br>
+        Contact général : <a href="mailto:contact@mindwork.cloud">contact@mindwork.cloud</a>
+      </div>
+      <div class="cta-footer">
+        Démo libre : <a href="https://mindwork.cloud">mindwork.cloud</a>
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+                                                             </html>
