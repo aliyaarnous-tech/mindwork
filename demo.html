@@ -1,348 +1,1596 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<title>MindWork — Démo privée</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#FAFAF7;--ink:#0F1226;--accent:#5B47D9;--accent-soft:#ECE9FB;--muted:#6B6E85;--card:#FFFFFF;--border:#E6E4DC;--success:#2F8F5C;--warn:#C97B1F;--danger:#C0392B}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.5}
-h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:900;letter-spacing:-0.02em}
-h1{font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.05}
-h2{font-size:1.8rem;line-height:1.15}
-h3{font-size:1.25rem}
-button{font-family:inherit;cursor:pointer;border:none}
-a{color:var(--accent);text-decoration:none}
-.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 20%,rgba(91,71,217,0.08),transparent 40%),radial-gradient(circle at 80% 80%,rgba(91,71,217,0.06),transparent 40%),var(--bg)}
-.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:440px;box-shadow:0 30px 60px -30px rgba(15,18,38,0.15)}
-.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
-.login-logo-mark{width:44px;height:44px;background:var(--accent);border-radius:12px;display:grid;place-items:center;color:#fff;font-size:22px}
-.login-logo-text{font-family:'Fraunces',serif;font-weight:900;font-size:1.5rem}
-.login-card h1{font-size:1.7rem;margin-bottom:8px}
-.login-sub{color:var(--muted);margin-bottom:28px;font-size:0.95rem}
-.login-field{margin-bottom:16px}
-.login-field label{display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px}
-.login-field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:1rem;background:var(--bg)}
-.login-field input:focus{outline:none;border-color:var(--accent)}
-.login-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border-radius:10px;font-weight:700;font-size:1rem;margin-top:8px}
-.login-btn:hover{background:#4836c4}
-.login-error{background:#FDECEA;color:var(--danger);padding:10px 14px;border-radius:8px;font-size:0.9rem;margin-bottom:16px;display:none}
-.login-error.show{display:block}
-.login-footer{margin-top:28px;padding-top:20px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);text-align:center}
-.app{display:none}.app.active{display:block}
-.header{background:var(--bg);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.header-logo{display:flex;align-items:center;gap:10px}
-.header-mark{width:36px;height:36px;background:var(--accent);border-radius:10px;display:grid;place-items:center;color:#fff;font-size:18px}
-.header-name{font-family:'Fraunces',serif;font-weight:900;font-size:1.3rem}
-.header-right{display:flex;align-items:center;gap:12px}
-.role-badge{background:var(--accent-soft);color:var(--accent);padding:6px 14px;border-radius:999px;font-weight:700;font-size:0.9rem}
-.btn-ghost{background:transparent;padding:8px 14px;border-radius:8px;color:var(--muted);font-size:0.9rem;font-weight:600}
-.btn-ghost:hover{background:var(--accent-soft);color:var(--accent)}
-.btn-outline{border:1px solid var(--border);background:var(--card);padding:8px 16px;border-radius:8px;font-size:0.9rem;font-weight:600}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
-.hero{max-width:1200px;margin:0 auto;padding:60px 32px 40px}
-.hero-eyebrow{color:var(--accent);font-weight:700;font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px}
-.hero h1 em{font-style:italic;color:var(--accent);font-weight:700}
-.hero-sub{color:var(--muted);max-width:700px;margin-top:20px;font-size:1.05rem}
-.roles-grid{max-width:1200px;margin:0 auto;padding:20px 32px 80px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-.role-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s}
-.role-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 20px 40px -20px rgba(91,71,217,0.25)}
-.role-emoji{font-size:2rem;margin-bottom:14px}
-.role-card h3{margin-bottom:6px}
-.role-persona{color:var(--accent);font-size:0.9rem;font-weight:600;margin-bottom:12px}
-.role-desc{color:var(--muted);font-size:0.95rem;margin-bottom:16px}
-.role-cta{color:var(--accent);font-weight:700;font-size:0.9rem}
-.role-view{display:none;max-width:1200px;margin:0 auto;padding:40px 32px 80px}
-.role-view.active{display:block}
-.greeting{margin-bottom:32px}
-.greeting .hello{color:var(--muted);font-size:0.95rem}
-.greeting .name{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;margin:4px 0}
-.greeting .ctx{color:var(--muted);font-size:0.95rem}
-.cta-card{background:var(--accent);color:#fff;border-radius:16px;padding:28px;margin-bottom:28px}
-.cta-card .label{font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.85;margin-bottom:10px}
-.cta-card h2{font-size:1.6rem;margin-bottom:8px;color:#fff}
-.cta-card p{opacity:0.9;margin-bottom:18px;font-size:0.95rem}
-.cta-btn{background:#fff;color:var(--accent);padding:12px 22px;border-radius:10px;font-weight:700}
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
-.kpi .v{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--warn)}
-.kpi .l{font-size:0.85rem;color:var(--muted);margin-top:4px}
-.section-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;margin-bottom:16px;margin-top:8px}
-.list-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;display:flex;gap:16px;align-items:flex-start}
-.list-card .icon{font-size:1.8rem}
-.list-card .body h4{font-size:1.05rem;margin-bottom:4px}
-.list-card .body p{color:var(--muted);font-size:0.9rem}
-.alert{padding:14px 18px;border-radius:10px;margin-bottom:12px;font-size:0.95rem}
-.alert.red{background:#FDECEA;color:var(--danger)}
-.alert.orange{background:#FDF2E0;color:var(--warn)}
-.alert.green{background:#E5F5EC;color:var(--success)}
-.table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.table th,.table td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border);font-size:0.95rem}
-.table th{background:var(--bg);font-weight:700;font-size:0.85rem}
-.table tr:last-child td{border-bottom:none}
-.tag{padding:3px 10px;border-radius:999px;font-size:0.78rem;font-weight:700}
-.tag.ok{background:#E5F5EC;color:var(--success)}
-.tag.warn{background:#FDF2E0;color:var(--warn)}
-.tag.alert{background:#FDECEA;color:var(--danger)}
-footer{padding:32px;text-align:center;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border)}
-</style>
-</head>
-<body>
-
-<div id="loginScreen" class="login-wrap">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="login-logo-mark">🎤</div>
-      <div class="login-logo-text">MindWork</div>
-    </div>
-    <h1>Démo privée</h1>
-    <p class="login-sub" id="loginSub">Accès réservé · IoT Valley</p>
-    <div class="login-error" id="loginError">Identifiants incorrects.</div>
-    <div class="login-field">
-      <label for="user">Identifiant</label>
-      <input type="text" id="user" autocomplete="username" placeholder="prénom.nom">
-    </div>
-    <div class="login-field">
-      <label for="pwd">Mot de passe</label>
-      <input type="password" id="pwd" autocomplete="current-password" placeholder="••••••••">
-    </div>
-    <button class="login-btn" onclick="tryLogin()">Accéder à la démo →</button>
-    <div class="login-footer">
-      Accès personnel et confidentiel · Données fictives · Démo expire le <span id="expDate"></span>
-    </div>
-  </div>
-</div>
-
-<div id="app" class="app">
-  <header class="header">
-    <div class="header-logo">
-      <div class="header-mark">🎤</div>
-      <div class="header-name">MindWork</div>
-    </div>
-    <div class="header-right">
-      <span class="role-badge" id="roleBadge" style="display:none">Salarié</span>
-      <button class="btn-outline" onclick="showSelector()" id="changeBtn" style="display:none">Changer de rôle</button>
-      <button class="btn-ghost" onclick="logout()">Quitter</button>
-    </div>
-  </header>
-
-  <section id="selector">
-    <div class="hero">
-      <div class="hero-eyebrow">Plateforme de prévention RPS</div>
-      <h1>La conformité psychosociale, <em>enfin à portée des PME industrielles.</em></h1>
-      <p class="hero-sub">Détection précoce par IA · DUERP généré automatiquement · Conformité Article L.4121-1 et ISO 45003. Choisissez un rôle pour explorer la démo.</p>
-    </div>
-    <div class="roles-grid">
-      <div class="role-card" onclick="enterRole('salarie','Salarié')">
-        <div class="role-emoji">🧑‍🏭</div>
-        <h3>Salarié</h3>
-        <div class="role-persona">Sophie Martin · Qualité</div>
-        <div class="role-desc">Questionnaire hebdo, score perso confidentiel, ressources & droits.</div>
-        <div class="role-cta">Entrer dans la démo →</div>
-      </div>
-      <div class="role-card" onclick="enterRole('manager','Manager')">
-        <div class="role-emoji">👥</div>
-        <h3>Manager d'équipe</h3>
-        <div class="role-persona">Pierre Dumont · Production</div>
-        <div class="role-desc">Vue agrégée anonyme de votre équipe, micro-formations RIPPLE.</div>
-        <div class="role-cta">Entrer dans la démo →</div>
-      </div>
-      <div class="role-card" onclick="enterRole('rh','RH / DRH')">
-        <div class="role-emoji">📊</div>
-        <h3>RH / DRH</h3>
-        <div class="role-persona">Marie Lefèvre · Direction RH</div>
-        <div class="role-desc">Dashboard global, alertes, plans d'action, rapport CSE.</div>
-        <div class="role-cta">Entrer dans la démo →</div>
-      </div>
-      <div class="role-card" onclick="enterRole('admin','Admin DUERP')">
-        <div class="role-emoji">⚖️</div>
-        <h3>Admin DUERP</h3>
-        <div class="role-persona">Cabinet juridique · Conformité</div>
-        <div class="role-desc">Génération DUERP, audit trail SHIELD, preuves juridiques.</div>
-        <div class="role-cta">Entrer dans la démo →</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="role-view" id="view-salarie">
-    <div class="greeting">
-      <div class="hello">Bonjour 👋</div>
-      <div class="name">Sophie</div>
-      <div class="ctx">Semaine S17 · Technicienne qualité</div>
-    </div>
-    <div class="cta-card">
-      <div class="label">Questionnaire de la semaine</div>
-      <h2>90 secondes pour vous écouter.</h2>
-      <p>8 questions confidentielles. Vos réponses sont anonymisées et agrégées par équipe.</p>
-      <button class="cta-btn">Commencer →</button>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="v">66</div><div class="l">Mon score · S17</div></div>
-      <div class="kpi"><div class="v">8</div><div class="l">Questionnaires remplis</div></div>
-      <div class="kpi"><div class="v" style="color:var(--success)">+4</div><div class="l">Évolution vs S16</div></div>
-    </div>
-    <div class="section-title">Recommandé pour vous</div>
-    <div class="list-card"><div class="icon">🧘</div><div class="body"><h4>Méditation guidée 7 jours</h4><p>10 min/jour · validé INSERM</p></div></div>
-    <div class="list-card"><div class="icon">📞</div><div class="body"><h4>Ligne d'écoute confidentielle</h4><p>Psychologues partenaires · 24/7 · anonyme</p></div></div>
-    <div class="list-card"><div class="icon">📄</div><div class="body"><h4>Mes droits — Article L.4121-1</h4><p>Vos droits en matière de prévention RPS</p></div></div>
-  </section>
-
-  <section class="role-view" id="view-manager">
-    <div class="greeting">
-      <div class="hello">Bonjour 👋</div>
-      <div class="name">Pierre</div>
-      <div class="ctx">Équipe Production · 24 collaborateurs · Vue agrégée anonyme</div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="v" style="color:var(--success)">72</div><div class="l">Score équipe · S17</div></div>
-      <div class="kpi"><div class="v">87%</div><div class="l">Taux de réponse</div></div>
-      <div class="kpi"><div class="v" style="color:var(--warn)">2</div><div class="l">Signaux d'alerte</div></div>
-      <div class="kpi"><div class="v">3</div><div class="l">RIPPLE actives</div></div>
-    </div>
-    <div class="section-title">Signaux SENTINEL (équipe agrégée)</div>
-    <div class="alert orange">⚠️ Charge perçue en hausse sur l'atelier B (4 semaines consécutives)</div>
-    <div class="alert orange">⚠️ Reconnaissance — sous-score MBI dégradé sur 3 collaborateurs anonymes</div>
-    <div class="alert green">✅ Climat relationnel stable · pas de tension détectée</div>
-    <div class="section-title">Micro-formations RIPPLE recommandées</div>
-    <div class="list-card"><div class="icon">🌊</div><div class="body"><h4>Gérer la charge cognitive en atelier</h4><p>Atelier collectif 45 min · 6 participants suggérés</p></div></div>
-    <div class="list-card"><div class="icon">🌊</div><div class="body"><h4>Feedback de reconnaissance — pratiques managériales</h4><p>Module manager 30 min · à suivre individuellement</p></div></div>
-  </section>
-
-  <section class="role-view" id="view-rh">
-    <div class="greeting">
-      <div class="hello">Bonjour 👋</div>
-      <div class="name">Marie</div>
-      <div class="ctx">Direction RH · 156 collaborateurs · 6 équipes</div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="v">68</div><div class="l">Score global S17</div></div>
-      <div class="kpi"><div class="v">82%</div><div class="l">Taux participation</div></div>
-      <div class="kpi"><div class="v" style="color:var(--danger)">3</div><div class="l">Alertes rouges</div></div>
-      <div class="kpi"><div class="v" style="color:var(--warn)">7</div><div class="l">Alertes oranges</div></div>
-      <div class="kpi"><div class="v" style="color:var(--success)">12</div><div class="l">Plans d'action</div></div>
-    </div>
-    <div class="section-title">Alertes actives</div>
-    <div class="alert red">🚨 Atelier C · burnout score élevé (MBI > seuil) · 2 collaborateurs · action immédiate requise</div>
-    <div class="alert orange">⚠️ Logistique · charge soutenue 6 semaines · plan d'action en cours</div>
-    <div class="alert orange">⚠️ Maintenance · reconnaissance dégradée · RIPPLE programmée S18</div>
-    <div class="section-title">Équipes — vue agrégée</div>
-    <table class="table">
-      <thead><tr><th>Équipe</th><th>Effectif</th><th>Score</th><th>Participation</th><th>État</th></tr></thead>
-      <tbody>
-        <tr><td>Production</td><td>24</td><td>72</td><td>87%</td><td><span class="tag ok">OK</span></td></tr>
-        <tr><td>Qualité</td><td>18</td><td>66</td><td>83%</td><td><span class="tag ok">OK</span></td></tr>
-        <tr><td>Logistique</td><td>32</td><td>61</td><td>78%</td><td><span class="tag warn">Vigilance</span></td></tr>
-        <tr><td>Maintenance</td><td>21</td><td>59</td><td>71%</td><td><span class="tag warn">Vigilance</span></td></tr>
-        <tr><td>Atelier C</td><td>15</td><td>48</td><td>80%</td><td><span class="tag alert">Alerte</span></td></tr>
-        <tr><td>Support</td><td>46</td><td>74</td><td>89%</td><td><span class="tag ok">OK</span></td></tr>
-      </tbody>
-    </table>
-    <div class="section-title">Rapport CSE prêt</div>
-    <div class="list-card"><div class="icon">📑</div><div class="body"><h4>Bilan RPS T2 2026 · prêt à présenter</h4><p>Généré automatiquement · 12 pages · données anonymisées</p></div></div>
-  </section>
-
-  <section class="role-view" id="view-admin">
-    <div class="greeting">
-      <div class="hello">Bonjour 👋</div>
-      <div class="name">Cabinet Juridique</div>
-      <div class="ctx">Conformité · DUERP automatisé · Audit trail SHIELD</div>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="v" style="color:var(--success)">98%</div><div class="l">Conformité L.4121-1</div></div>
-      <div class="kpi"><div class="v">142</div><div class="l">Preuves horodatées</div></div>
-      <div class="kpi"><div class="v">24</div><div class="l">DUERP générés</div></div>
-      <div class="kpi"><div class="v" style="color:var(--success)">0</div><div class="l">Contentieux ouverts</div></div>
-    </div>
-    <div class="section-title">DUERP — état de conformité</div>
-    <div class="alert green">✅ DUERP 2026 généré le 14/05/2026 · 156 risques psychosociaux évalués · signature horodatée</div>
-    <div class="alert green">✅ Plan annuel de prévention · 12 actions tracées · ISO 45003 conforme</div>
-    <div class="alert orange">⚠️ Mise à jour trimestrielle T3 attendue avant le 30/09/2026</div>
-    <div class="section-title">Audit trail SHIELD — 30 derniers jours</div>
-    <table class="table">
-      <thead><tr><th>Date</th><th>Évènement</th><th>Source</th><th>Hash</th></tr></thead>
-      <tbody>
-        <tr><td>14/05/2026</td><td>DUERP 2026 — version finale signée</td><td>RH · M.Lefèvre</td><td>0x7a3f...c91</td></tr>
-        <tr><td>12/05/2026</td><td>Plan d'action atelier C · validé</td><td>RH · M.Lefèvre</td><td>0x4b2e...8f0</td></tr>
-        <tr><td>08/05/2026</td><td>Alerte SENTINEL S18 · burnout</td><td>IA · auto</td><td>0x9c1a...3d2</td></tr>
-        <tr><td>02/05/2026</td><td>Bilan trimestriel T1 · CSE</td><td>RH · M.Lefèvre</td><td>0x2e8b...a47</td></tr>
-        <tr><td>28/04/2026</td><td>RIPPLE Logistique · clôturée</td><td>Manager · P.Dumont</td><td>0x6f3d...51c</td></tr>
-      </tbody>
-    </table>
-    <div class="section-title">Preuves juridiques exportables</div>
-    <div class="list-card"><div class="icon">📜</div><div class="body"><h4>Dossier de preuve — atelier C</h4><p>14 documents · audit trail complet · prêt pour conseil prud'hommes</p></div></div>
-    <div class="list-card"><div class="icon">🛡️</div><div class="body"><h4>Attestation de conformité Article L.4121-1</h4><p>Générée le 15/05/2026 · signature électronique qualifiée</p></div></div>
-  </section>
-
-  <footer>
-    MindWork · Démo privée · Données fictives · © 2026 · Aliya ARNOUS-BLAYO · Toulouse
-  </footer>
-</div>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MindWork — Plateforme de prévention RPS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-// ===== CONFIG PERSONNALISABLE =====
-const DEMO_CONFIG = {
-  validUsers: [
-    { user: "albane.iotvalley", pwd: "MindWork2026!" }
-  ],
-  prospectName: "IoT Valley",
-  expirationDate: "30/06/2026"
-};
-// ==================================
-
-document.getElementById('loginSub').textContent = "Accès réservé · " + DEMO_CONFIG.prospectName;
-document.getElementById('expDate').textContent = DEMO_CONFIG.expirationDate;
-
-function tryLogin() {
-  const u = document.getElementById('user').value.trim().toLowerCase();
-  const p = document.getElementById('pwd').value;
-  const err = document.getElementById('loginError');
-  const ok = DEMO_CONFIG.validUsers.some(v => v.user.toLowerCase() === u && v.pwd === p);
-  if (ok) {
-    err.classList.remove('show');
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('app').classList.add('active');
-    sessionStorage.setItem('mw_demo_auth','1');
-  } else {
-    err.classList.add('show');
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Manrope', 'system-ui', 'sans-serif'],
+          display: ['Fraunces', 'Georgia', 'serif'],
+        },
+        colors: {
+          ink: '#0F1226',
+          paper: '#FAFAF7',
+          mist: '#F1F2F7',
+          rule: '#E5E7EB',
+          brand: {
+            50:'#EEF2FF', 100:'#E0E7FF', 200:'#C7D2FE', 300:'#A5B4FC',
+            400:'#818CF8', 500:'#6366F1', 600:'#4F46E5', 700:'#4338CA', 800:'#3730A3', 900:'#312E81'
+          },
+          accent: '#7C3AED',
+          ok: '#16A34A',
+          warn: '#D97706',
+          danger: '#DC2626',
+        },
+      },
+    },
+  };
+</script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script crossorigin src="https://unpkg.com/prop-types@15.8.1/prop-types.min.js"></script>
+  <script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+  <style>
+  html, body, #root { height: 100%; }
+  body { background: #FAFAF7; color: #0F1226; -webkit-font-smoothing: antialiased; }
+  .font-display { font-family: 'Fraunces', Georgia, serif; }
+  .grain {
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(15,18,38,0.05) 1px, transparent 0);
+    background-size: 14px 14px;
   }
+  .scrollbar-thin::-webkit-scrollbar { width:6px; height:6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:3px; }
+  .ring-gradient { background: conic-gradient(var(--g, #4F46E5) 0% var(--p, 75%), #E5E7EB var(--p, 75%) 100%); }
+  @keyframes fadein { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform:none; } }
+  .fadein { animation: fadein .35s ease both; }
+  @keyframes pulse-ring { 0% { box-shadow:0 0 0 0 rgba(220,38,38,.45); } 70% { box-shadow:0 0 0 12px rgba(220,38,38,0); } 100% { box-shadow:0 0 0 0 rgba(220,38,38,0); } }
+  .pulse-ring { animation: pulse-ring 2.2s infinite; }
+</style>
+<style id="demo-gate-style">
+#demoGate{position:fixed;inset:0;background:#FAFAF7;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Manrope',system-ui,sans-serif}
+#demoGate.hidden{display:none}
+#demoGate .card{background:#fff;border:1px solid #E6E4DC;border-radius:20px;padding:44px 40px;width:100%;max-width:440px;box-shadow:0 30px 60px -30px rgba(15,18,38,0.15)}
+#demoGate .logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+#demoGate .mark{width:44px;height:44px;background:#5B47D9;border-radius:12px;display:grid;place-items:center;color:#fff;font-size:22px}
+#demoGate .brand{font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1.5rem;color:#0F1226}
+#demoGate h1{font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1.7rem;color:#0F1226;margin-bottom:8px;letter-spacing:-0.02em}
+#demoGate .sub{color:#6B6E85;margin-bottom:28px;font-size:0.95rem}
+#demoGate label{display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px;color:#0F1226}
+#demoGate input{width:100%;padding:12px 14px;border:1px solid #E6E4DC;border-radius:10px;font-family:inherit;font-size:1rem;background:#FAFAF7;margin-bottom:16px;box-sizing:border-box}
+#demoGate input:focus{outline:none;border-color:#5B47D9}
+#demoGate button{width:100%;padding:14px;background:#5B47D9;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit;margin-top:8px}
+#demoGate button:hover{background:#4836c4}
+#demoGate .err{background:#FDECEA;color:#C0392B;padding:10px 14px;border-radius:8px;font-size:0.9rem;margin-bottom:16px;display:none}
+#demoGate .err.show{display:block}
+#demoGate .foot{margin-top:28px;padding-top:20px;border-top:1px solid #E6E4DC;font-size:0.8rem;color:#6B6E85;text-align:center}
+</style></head>
+<body><div id="demoGate"><div class="card"><div class="logo"><div class="mark">🎤</div><div class="brand">MindWork</div></div><h1>Démo privée</h1><p class="sub" id="demoGateSub">Accès réservé · IoT Valley</p><div class="err" id="demoGateErr">Identifiants incorrects.</div><label for="demoU">Identifiant</label><input type="text" id="demoU" autocomplete="username" placeholder="prénom.nom"><label for="demoP">Mot de passe</label><input type="password" id="demoP" autocomplete="current-password" placeholder="••••••••"><button id="demoBtn">Accéder à la démo →</button><div class="foot">Accès personnel et confidentiel · Données fictives · Démo expire le <span id="demoExp">30/06/2026</span></div></div></div>
+<script id="demo-gate-script">
+(function(){
+  var CFG = {users:[{u:"albane.iotvalley",p:"MindWork2026!"}],prospect:"IoT Valley",expire:"30/06/2026"};
+  document.getElementById('demoGateSub').textContent = "Accès réservé · " + CFG.prospect;
+  document.getElementById('demoExp').textContent = CFG.expire;
+  function tryLogin(){
+    var u=document.getElementById('demoU').value.trim().toLowerCase();
+    var p=document.getElementById('demoP').value;
+    var ok=CFG.users.some(function(v){return v.u.toLowerCase()===u && v.p===p;});
+    if(ok){document.getElementById('demoGate').classList.add('hidden');try{sessionStorage.setItem('mw_demo_auth','1');}catch(e){}}
+    else{document.getElementById('demoGateErr').classList.add('show');}
+  }
+  document.getElementById('demoBtn').addEventListener('click',tryLogin);
+  document.getElementById('demoU').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
+  document.getElementById('demoP').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
+  try{if(sessionStorage.getItem('mw_demo_auth')==='1'){document.getElementById('demoGate').classList.add('hidden');}}catch(e){}
+})();
+</script>
+
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useMemo, useRef, createContext, useContext } = React;
+const {
+  ResponsiveContainer, LineChart, Line, BarChart, Bar, AreaChart, Area,
+  PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, RadialBarChart, RadialBar
+} = Recharts;
+
+/* =====================================================================
+   1. PERSISTENCE LAYER (localStorage)
+===================================================================== */
+const STORAGE_KEY = 'mindwork.v1.state';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+function saveState(state) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
 }
 
-document.getElementById('pwd').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
-document.getElementById('user').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+/* =====================================================================
+   2. SEED DATA — démo pré-remplie cohérente PME industrielle Occitanie
+===================================================================== */
+const TEAMS = [
+  { id:'prod',   name:'Production',         size: 14, color:'#4F46E5' },
+  { id:'qual',   name:'Qualité',            size: 8,  color:'#7C3AED' },
+  { id:'maint',  name:'Maintenance',        size: 6,  color:'#0EA5E9' },
+  { id:'bdet',   name:"Bureau d'études",    size: 9,  color:'#10B981' },
+  { id:'admin',  name:'Administratif',      size: 5,  color:'#F59E0B' },
+];
 
-function enterRole(role, label) {
-  document.getElementById('selector').style.display = 'none';
-  document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + role).classList.add('active');
-  const badge = document.getElementById('roleBadge');
-  badge.textContent = label;
-  badge.style.display = 'inline-block';
-  document.getElementById('changeBtn').style.display = 'inline-block';
-  window.scrollTo(0, 0);
+// 8 semaines d'historique + semaine en cours
+const WEEKS = Array.from({length:9}, (_,i) => `S${i+8}`);
+
+// Génère un score réaliste avec tendance
+function genTeamHistory(teamId, baseTrend) {
+  return WEEKS.map((w, i) => {
+    const noise = (Math.sin(i + teamId.length) + 1) * 4;
+    const score = Math.max(35, Math.min(92, baseTrend[i] + noise));
+    return { week:w, score: Math.round(score) };
+  });
 }
 
-function showSelector() {
-  document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
-  document.getElementById('selector').style.display = 'block';
-  document.getElementById('roleBadge').style.display = 'none';
-  document.getElementById('changeBtn').style.display = 'none';
-  window.scrollTo(0, 0);
+const SEED = {
+  company: {
+    name: 'Aérotech Occitanie',
+    siret: '843 256 901 00027',
+    sector: 'Sous-traitance aéronautique',
+    employees: 42,
+    convCollective: 'Métallurgie (IDCC 3248)',
+    address: 'ZAC de Montaudran, 31400 Toulouse',
+  },
+  teams: TEAMS,
+  history: {
+    prod:  genTeamHistory('prod',  [78,75,72,68,62,58,54,58,61]),
+    qual:  genTeamHistory('qual',  [82,80,78,76,74,72,70,68,67]),
+    maint: genTeamHistory('maint', [85,84,82,80,78,77,76,75,74]),
+    bdet:  genTeamHistory('bdet',  [70,68,66,64,60,57,52,49,48]),
+    admin: genTeamHistory('admin', [88,86,85,84,83,82,81,80,79]),
+  },
+  // Réponses individuelles du salarié connecté (Sophie Martin)
+  myAnswers: [
+    { week:'S8',  score:82 }, { week:'S9', score:78 }, { week:'S10', score:70 },
+    { week:'S11', score:65 }, { week:'S12', score:58 }, { week:'S13', score:55 },
+    { week:'S14', score:66 }, { week:'S15', score:74 },
+  ],
+  // DUERP — risques RPS détectés
+  duerpRisks: [
+    {
+      id:'r1', unit:'Production', risk:'Charge de travail excessive',
+      sources:'Cadence record (objectif 870 avions Airbus 2026)',
+      gravity:3, frequency:4, score:12, level:'Élevé',
+      measures:[
+        'Audit de charge mensuel par équipe',
+        'Réorganisation rotation postes (Q3 2026)',
+        'Atelier RIPPLE "Charge mentale" déployé S15',
+      ],
+      lastUpdate:'2026-04-12',
+    },
+    {
+      id:'r2', unit:"Bureau d'études", risk:'Tensions interpersonnelles',
+      sources:'Restructuration division D&S, départs récents',
+      gravity:3, frequency:3, score:9, level:'Élevé',
+      measures:[
+        'Médiation collective programmée S17',
+        'Formation managers "Communication non-violente"',
+      ],
+      lastUpdate:'2026-04-10',
+    },
+    {
+      id:'r3', unit:'Qualité', risk:'Manque de reconnaissance',
+      sources:'Questionnaire SENTINEL S12-S15, items 4 et 7',
+      gravity:2, frequency:3, score:6, level:'Modéré',
+      measures:[
+        'Mise en place rituel feedback hebdo',
+        'Programme "Manager Protecteur" (Q2 2026)',
+      ],
+      lastUpdate:'2026-04-08',
+    },
+    {
+      id:'r4', unit:'Maintenance', risk:'Horaires décalés / fatigue',
+      sources:'Astreintes nuit, déclaration médecine du travail',
+      gravity:2, frequency:4, score:8, level:'Modéré',
+      measures:[
+        'Révision planning astreintes (S20)',
+        'Visite médicale renforcée trimestrielle',
+      ],
+      lastUpdate:'2026-04-05',
+    },
+  ],
+  // Catalogue RIPPLE — micro-formations
+  ripple: [
+    { id:'rp1', title:'Reconnaître les signaux faibles du burnout', duration:12, target:'Manager', format:'Vidéo + quiz', completed:18, total:42 },
+    { id:'rp2', title:'Communication non-violente en atelier', duration:18, target:'Tous', format:'Atelier 1h', completed:9, total:42 },
+    { id:'rp3', title:'Charge mentale : techniques de récupération', duration:8, target:'Tous', format:'Audio guidé', completed:24, total:42 },
+    { id:'rp4', title:'Conduire un entretien de retour après arrêt', duration:15, target:'Manager', format:'Vidéo', completed:5, total:8 },
+    { id:'rp5', title:'CSE : analyser un signalement RPS', duration:25, target:'Élu CSE', format:'Webinaire', completed:3, total:4 },
+    { id:'rp6', title:'Droit à la déconnexion : poser le cadre', duration:10, target:'Tous', format:'Vidéo + checklist', completed:31, total:42 },
+  ],
+  // Audit trail SHIELD — preuves juridiques
+  auditLog: [
+    { date:'2026-04-14 09:12', actor:'Système', action:'DUERP mis à jour automatiquement (risque r1)', hash:'a3f9b2c1' },
+    { date:'2026-04-12 14:30', actor:'M. Lefèvre (DRH)', action:'Plan d\'action validé pour Production', hash:'b7e4d091' },
+    { date:'2026-04-10 11:05', actor:'Système', action:'Alerte rouge équipe Bureau d\'études', hash:'c2a8f513' },
+    { date:'2026-04-08 16:22', actor:'M. Lefèvre (DRH)', action:'Atelier RIPPLE programmé pour S17', hash:'d4f1e208' },
+    { date:'2026-04-05 10:40', actor:'Système', action:'Rapport mensuel CSE généré', hash:'e8c3b677' },
+    { date:'2026-04-01 08:00', actor:'Système', action:'Campagne SENTINEL S14 lancée (42 invitations)', hash:'f1d9a4c2' },
+  ],
+  user: {
+    me: { name:'Sophie Martin', initials:'SM', role:'Technicienne qualité', team:'Qualité', tenure:'5 ans' },
+  },
+  campaignWeek: 'S16',
+};
+
+/* =====================================================================
+   3. SENTINEL — Questionnaire scientifiquement adossé
+   Inspiré PSS-10 / MBI-GS / PHQ-9 (versions courtes)
+   1 question est INVERSÉE (anti-fraude)
+===================================================================== */
+const SENTINEL_QUESTIONS = [
+  { id:'q1', axis:'PSS', text:"Cette semaine, à quelle fréquence vous êtes-vous senti(e) dépassé(e) par ce que vous aviez à faire ?", inverted:false },
+  { id:'q2', axis:'MBI-EE', text:"Vous êtes-vous senti(e) émotionnellement vidé(e) par votre travail ?", inverted:false },
+  { id:'q3', axis:'MBI-EP', text:"Avez-vous ressenti que vous accomplissiez des choses utiles dans votre travail ?", inverted:true },
+  { id:'q4', axis:'Recon', text:"Vous êtes-vous senti(e) reconnu(e) par votre hiérarchie ou vos collègues ?", inverted:true },
+  { id:'q5', axis:'PHQ', text:"Avez-vous eu du mal à vous endormir ou à rester endormi(e) à cause du travail ?", inverted:false },
+  { id:'q6', axis:'Charge', text:"Avez-vous eu le sentiment que votre charge de travail était soutenable ?", inverted:true },
+  { id:'q7', axis:'Soutien', text:"Avez-vous pu compter sur le soutien de votre équipe en cas de difficulté ?", inverted:true },
+  { id:'q8', axis:'PSS', text:"Vous êtes-vous senti(e) tendu(e), nerveux(se) ou irritable au travail ?", inverted:false },
+];
+const LIKERT = [
+  { val:0, label:'Jamais',         emoji:'😌' },
+  { val:1, label:'Rarement',       emoji:'🙂' },
+  { val:2, label:'Parfois',        emoji:'😐' },
+  { val:3, label:'Souvent',        emoji:'😟' },
+  { val:4, label:'Très souvent',   emoji:'😩' },
+];
+
+// Score 0..100 (100 = excellent)
+function computeScore(answers) {
+  let total = 0, max = 0;
+  SENTINEL_QUESTIONS.forEach(q => {
+    const a = answers[q.id];
+    if (a == null) return;
+    const v = q.inverted ? (4 - a) : a;
+    total += v;
+    max += 4;
+  });
+  if (max === 0) return null;
+  // 0 = très mauvais signal, donc on inverse: score bien-être = 100 - (total/max)*100
+  return Math.round(100 - (total/max)*100);
+}
+function scoreLevel(s) {
+  if (s == null) return { label:'—', color:'bg-gray-300', text:'text-gray-500' };
+  if (s >= 70)   return { label:'Vert',   color:'bg-ok',     text:'text-ok',     hex:'#16A34A' };
+  if (s >= 50)   return { label:'Orange', color:'bg-warn',   text:'text-warn',   hex:'#D97706' };
+  return         { label:'Rouge',  color:'bg-danger', text:'text-danger', hex:'#DC2626' };
 }
 
-function logout() {
-  sessionStorage.removeItem('mw_demo_auth');
-  location.reload();
+/* =====================================================================
+   4. APP STATE CONTEXT
+===================================================================== */
+const AppCtx = createContext(null);
+
+function useApp() { return useContext(AppCtx); }
+
+function AppProvider({ children }) {
+  const [state, setState] = useState(() => loadState() || SEED);
+  const [role, setRole] = useState(null); // 'salarie' | 'manager' | 'rh' | 'admin'
+  useEffect(() => { saveState(state); }, [state]);
+
+  const reset = () => { localStorage.removeItem(STORAGE_KEY); setState(SEED); };
+
+  return (
+    <AppCtx.Provider value={{ state, setState, role, setRole, reset }}>
+      {children}
+    </AppCtx.Provider>
+  );
 }
 
-if (sessionStorage.getItem('mw_demo_auth') === '1') {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').classList.add('active');
+/* =====================================================================
+   5. UI ATOMS
+===================================================================== */
+function Logo({ small }) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className={`${small?'w-7 h-7':'w-9 h-9'} rounded-lg bg-gradient-to-br from-brand-600 to-accent flex items-center justify-center text-white font-bold shadow-sm`}>
+        <svg viewBox="0 0 24 24" fill="none" className={small?'w-4 h-4':'w-5 h-5'} stroke="currentColor" strokeWidth="2">
+          <path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 1 0 10 0V7a5 5 0 0 0-5-5Z"/>
+          <path d="M5 13a7 7 0 0 0 14 0"/>
+          <path d="M12 20v2"/>
+        </svg>
+      </div>
+      <div>
+        <div className={`font-display font-black tracking-tight ${small?'text-base leading-none':'text-xl leading-none'}`}>MindWork</div>
+        {!small && <div className="text-[10px] uppercase tracking-[0.18em] text-gray-500 mt-0.5">Prévenir · Mesurer · Conformer</div>}
+      </div>
+    </div>
+  );
 }
+function Pill({ children, color='gray' }) {
+  const map = {
+    gray:   'bg-gray-100 text-gray-700',
+    brand:  'bg-brand-50 text-brand-700',
+    ok:     'bg-green-50 text-green-700',
+    warn:   'bg-amber-50 text-amber-700',
+    danger: 'bg-red-50 text-red-700',
+    ink:    'bg-ink text-white',
+  };
+  return <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full ${map[color]}`}>{children}</span>;
+}
+function Card({ children, className='' }) {
+  return <div className={`bg-white border border-gray-200 rounded-2xl ${className}`}>{children}</div>;
+}
+function SectionTitle({ kicker, title, action }) {
+  return (
+    <div className="flex items-end justify-between mb-4">
+      <div>
+        {kicker && <div className="text-[10px] uppercase tracking-[0.2em] text-brand-600 font-semibold">{kicker}</div>}
+        <h2 className="font-display text-2xl font-bold tracking-tight">{title}</h2>
+      </div>
+      {action}
+    </div>
+  );
+}
+function Stat({ label, value, sub, tone='ink' }) {
+  const colors = { ink:'text-ink', ok:'text-ok', warn:'text-warn', danger:'text-danger', brand:'text-brand-700' };
+  return (
+    <Card className="p-5">
+      <div className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">{label}</div>
+      <div className={`font-display text-3xl font-bold mt-1 ${colors[tone]}`}>{value}</div>
+      {sub && <div className="text-xs text-gray-500 mt-1">{sub}</div>}
+    </Card>
+  );
+}
+
+/* =====================================================================
+   6. ROLE PICKER (login simulé)
+===================================================================== */
+function RoleSelect() {
+  const { setRole } = useApp();
+  const roles = [
+    { id:'salarie', icon:'🧑‍🏭', title:'Salarié',          sub:'Sophie Martin · Qualité',        desc:'Questionnaire hebdo, score perso confidentiel, ressources & droits.' },
+    { id:'manager', icon:'👥',  title:"Manager d'équipe", sub:'Pierre Dumont · Production',      desc:'Vue agrégée anonyme de votre équipe, micro-formations RIPPLE.' },
+    { id:'rh',      icon:'📊',  title:'RH / DRH',         sub:'Marie Lefèvre · Direction RH',    desc:'Dashboard global, alertes, plans d\'action, rapport CSE.' },
+    { id:'admin',   icon:'⚖️',  title:'Admin DUERP',      sub:'Cabinet juridique · Conformité',  desc:'Génération DUERP, audit trail SHIELD, preuves juridiques.' },
+  ];
+  return (
+    <div className="min-h-screen bg-paper grain">
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        <div className="flex items-center justify-between">
+          <Logo />
+          <div className="text-xs text-gray-500">v1.0 · démo pilote · Toulouse</div>
+        </div>
+
+        <div className="mt-12 max-w-3xl">
+          <div className="text-[10px] uppercase tracking-[0.25em] text-brand-600 font-semibold">Plateforme de prévention RPS</div>
+          <h1 className="font-display text-5xl md:text-6xl font-black tracking-tight mt-2 leading-[1.05]">
+            La conformité psychosociale,<br/>
+            <span className="italic font-medium text-brand-700">enfin à portée des PME industrielles.</span>
+          </h1>
+          <p className="text-gray-600 mt-5 text-lg leading-relaxed max-w-2xl">
+            Détection précoce par IA · DUERP généré automatiquement · Conformité Article L.4121-1 et ISO 45003. Choisissez un rôle pour explorer la démo.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12">
+          {roles.map((r,i) => (
+            <button key={r.id} onClick={()=>setRole(r.id)}
+              className="text-left bg-white border border-gray-200 rounded-2xl p-6 hover:border-brand-500 hover:shadow-lg hover:-translate-y-0.5 transition-all fadein"
+              style={{ animationDelay: `${i*60}ms` }}>
+              <div className="text-3xl">{r.icon}</div>
+              <div className="font-display text-xl font-bold mt-3">{r.title}</div>
+              <div className="text-xs text-brand-700 font-semibold mt-1">{r.sub}</div>
+              <div className="text-sm text-gray-600 mt-3 leading-relaxed">{r.desc}</div>
+              <div className="mt-5 text-xs font-semibold text-brand-700 inline-flex items-center gap-1">
+                Entrer dans la démo
+                <span aria-hidden>→</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-16 grid md:grid-cols-3 gap-4">
+          <Card className="p-5">
+            <div className="text-2xl">🌡️</div>
+            <div className="font-bold mt-2">SENTINEL</div>
+            <div className="text-sm text-gray-600 mt-1">Détection IA hebdomadaire (90 sec) · échelles PSS-10, MBI, PHQ-9.</div>
+          </Card>
+          <Card className="p-5">
+            <div className="text-2xl">🌊</div>
+            <div className="font-bold mt-2">RIPPLE</div>
+            <div className="text-sm text-gray-600 mt-1">Micro-formations collectives ciblées par les alertes détectées.</div>
+          </Card>
+          <Card className="p-5">
+            <div className="text-2xl">🛡️</div>
+            <div className="font-bold mt-2">SHIELD</div>
+            <div className="text-sm text-gray-600 mt-1">DUERP automatisé · audit trail · preuves juridiques en cas de contentieux.</div>
+          </Card>
+        </div>
+
+        <div className="text-xs text-gray-400 mt-12 text-center">
+          MindWork · Aliya ARNOUS-BLAYO & Maria GAROFALO-ESPAGNO · Toulouse · 2026 — Démo pilote, données fictives. Stockage local navigateur.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   7. APP SHELL (header partagé après login)
+===================================================================== */
+function Shell({ children, sidebar=null, mobile=false, headerMeta=null, headerActions=null }) {
+  const { state, role, setRole, reset } = useContext(AppCtx);
+  const roleLabel = ({ salarie:'Salarié', manager:'Manager', rh:'RH / DRH', admin:'Admin DUERP' })[role] ?? '';
+  if (mobile) {
+    return (
+      <div className="min-h-screen bg-paper">
+        <header className="sticky top-0 z-30 bg-white/85 backdrop-blur border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+            <Logo small />
+            <div className="flex items-center gap-3">
+              <Pill color="brand">{roleLabel}</Pill>
+              <button onClick={reset} title="Réinitialiser la démo" className="text-[11px] text-gray-500 hover:text-ink">↺ reset</button>
+              <button onClick={()=>setRole(null)} className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50">Changer de rôle</button>
+            </div>
+          </div>
+        </header>
+        <main>{children}</main>
+      </div>
+    );
+  }
+  return (
+    <div className="min-h-screen bg-[#F4F6FB] flex">
+      {sidebar}
+      <div className="flex-1 min-w-0 flex flex-col">
+        <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
+          <div className="px-6 lg:px-10 h-20 flex items-center justify-between gap-6">
+            <div className="min-w-0">
+              <h1 className="font-display text-xl lg:text-2xl font-bold tracking-tight text-ink truncate">
+                Tableau de bord — <span>{state.company.name}</span>
+              </h1>
+              <div className="text-xs text-gray-500 mt-1 truncate">
+                {headerMeta || <>{state.company.employees} salariés · {state.company.sector} · Questionnaire S16/2026 · Taux participation : 81%</>}
+              </div>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              {headerActions}
+              <button onClick={reset} title="Réinitialiser la démo" className="text-[11px] text-gray-400 hover:text-ink">↺ reset</button>
+              <button onClick={()=>setRole(null)} className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50">Changer de rôle</button>
+            </div>
+          </div>
+        </header>
+        <main className="flex-1 p-6 lg:p-10">{children}</main>
+      </div>
+    </div>
+  );
+}
+
+function Sidebar({ items, current, onChange, sections=null }) {
+  const renderItem = (it) => (
+    <button key={it.id} onClick={()=>onChange(it.id)}
+      className={`w-full flex items-center gap-3 text-left px-3 py-2.5 rounded-lg text-sm transition${current===it.id ? ' bg-brand-600 text-white font-semibold shadow-sm' : ' text-white/70 hover:bg-white/5 hover:text-white'}`}>
+      <span className="text-base w-5 text-center">{it.icon}</span>
+      <span className="flex-1">{it.label}</span>
+      {it.badge != null && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-red-500/90 text-white font-bold">{it.badge}</span>}
+    </button>
+  );
+  return (
+    <aside className="hidden md:flex md:flex-col w-64 shrink-0 bg-[#1E1A3C] text-white min-h-screen sticky top-0 self-start">
+      <div className="px-6 pt-6 pb-8 border-b border-white/10">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-500 to-accent flex items-center justify-center shadow-sm">
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white" stroke="currentColor" strokeWidth="2">
+              <path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 1 0 10 0V7a5 5 0 0 0-5-5Z"/>
+              <path d="M5 13a7 7 0 0 0 14 0"/><path d="M12 20v2"/>
+            </svg>
+          </div>
+          <div>
+            <div className="font-display font-black tracking-tight text-xl leading-none">MindWork</div>
+            <div className="text-[10px] text-white/60 mt-1 uppercase tracking-wider">Plateforme santé mentale IA</div>
+          </div>
+        </div>
+      </div>
+      <nav className="flex-1 overflow-y-auto py-4">
+        {sections ? sections.map((sec,si)=>(
+          <div key={si} className="mb-6">
+            <div className="px-6 mb-2 text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold">{sec.title}</div>
+            <div className="space-y-0.5 px-3">{sec.items.map(renderItem)}</div>
+          </div>
+        )) : <div className="space-y-0.5 px-3">{items.map(renderItem)}</div>}
+      </nav>
+      <div className="px-6 py-4 border-t border-white/10 text-[10px] text-white/40 leading-relaxed">
+        🔒 Données anonymisées (≥5 pers.) · HDS · Article L.4121-1
+      </div>
+    </aside>
+  );
+}
+
+/* =====================================================================
+   8. SALARIÉ — Mobile-first (suit ton mockup employé)
+===================================================================== */
+function SalarieView() {
+  const { state, setState } = useApp();
+  const [tab, setTab] = useState('home');
+  const tabs = [
+    { id:'home',     icon:'🏠', label:'Accueil' },
+    { id:'sentinel', icon:'🌡️', label:'Sentinel' },
+    { id:'alert',    icon:'🚨', label:'Alerte' },
+    { id:'res',      icon:'📚', label:'Ressources' },
+    { id:'me',       icon:'👤', label:'Profil' },
+  ];
+
+  return (
+    <Shell mobile>
+      <div className="md:py-10 md:px-6">
+        <div className="md:max-w-md md:mx-auto">
+          {/* phone frame on desktop, full on mobile */}
+          <div className="md:bg-white md:rounded-[44px] md:shadow-2xl md:border md:border-gray-200 md:overflow-hidden md:min-h-[820px] flex flex-col bg-white min-h-screen md:min-h-0">
+            <div className="flex-1 overflow-y-auto scrollbar-thin">
+              <div className="px-5 pt-6 pb-24">
+                {tab==='home'     && <SalHome onGo={setTab} />}
+                {tab==='sentinel' && <SalSentinel onDone={()=>setTab('me')} />}
+                {tab==='alert'    && <SalAlert />}
+                {tab==='res'      && <SalResources />}
+                {tab==='me'       && <SalProfile />}
+              </div>
+            </div>
+            <nav className="bg-white border-t border-gray-200 flex pt-2 pb-3 sticky bottom-0">
+              {tabs.map(t => (
+                <button key={t.id} onClick={()=>setTab(t.id)}
+                  className={`flex-1 flex flex-col items-center gap-0.5 py-1.5 ${tab===t.id?'text-brand-700':'text-gray-400'}`}>
+                  <span className="text-xl">{t.icon}</span>
+                  <span className="text-[10px] font-semibold">{t.label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+    </Shell>
+  );
+}
+
+function SalHome({ onGo }) {
+  const { state } = useApp();
+  const last = state.myAnswers[state.myAnswers.length-1];
+  const lvl = scoreLevel(last.score);
+  return (
+    <div className="space-y-5 fadein">
+      <div>
+        <div className="text-xs text-gray-500">Bonjour 👋</div>
+        <h1 className="font-display text-2xl font-bold mt-0.5">{state.user.me.name.split(' ')[0]}</h1>
+        <div className="text-xs text-gray-500 mt-1">Semaine {state.campaignWeek} · {state.user.me.role}</div>
+      </div>
+
+      <div className="rounded-2xl p-5 text-white bg-gradient-to-br from-brand-600 to-accent">
+        <div className="text-xs uppercase tracking-wider opacity-80 font-semibold">Questionnaire de la semaine</div>
+        <div className="font-display text-xl font-bold mt-1">90 secondes pour vous écouter.</div>
+        <p className="text-sm opacity-90 mt-2 leading-relaxed">8 questions confidentielles. Vos réponses sont anonymisées et agrégées par équipe.</p>
+        <button onClick={()=>onGo('sentinel')} className="mt-4 bg-white text-brand-700 font-bold py-3 rounded-xl w-full hover:bg-brand-50 transition">Commencer →</button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="p-4 text-center">
+          <div className={`font-display text-3xl font-bold ${lvl.text}`}>{last.score}</div>
+          <div className="text-[11px] text-gray-500 mt-1">Mon score · {last.week}</div>
+        </Card>
+        <Card className="p-4 text-center">
+          <div className="font-display text-3xl font-bold">8</div>
+          <div className="text-[11px] text-gray-500 mt-1">Questionnaires remplis</div>
+        </Card>
+      </div>
+
+      <div>
+        <div className="font-bold mb-2.5">Recommandé pour vous</div>
+        <Card className="p-4 flex gap-3 mb-2.5">
+          <div className="text-2xl">🧘</div>
+          <div className="flex-1">
+            <div className="font-bold text-sm">Méditation guidée 7 jours</div>
+            <div className="text-xs text-gray-500 mt-0.5">10 min/jour · validé INSERM</div>
+            <Pill color="brand">Audio · 7 jours</Pill>
+          </div>
+        </Card>
+        <Card className="p-4 flex gap-3">
+          <div className="text-2xl">📔</div>
+          <div className="flex-1">
+            <div className="font-bold text-sm">Journal émotionnel privé</div>
+            <div className="text-xs text-gray-500 mt-0.5">Chiffré · jamais partagé</div>
+            <Pill color="ok">Privé</Pill>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function SalSentinel({ onDone }) {
+  const { state, setState } = useApp();
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [finished, setFinished] = useState(false);
+
+  const q = SENTINEL_QUESTIONS[step];
+  const progress = ((step+1)/SENTINEL_QUESTIONS.length)*100;
+  const selected = answers[q?.id];
+
+  const next = () => {
+    if (step < SENTINEL_QUESTIONS.length-1) setStep(s=>s+1);
+    else {
+      const score = computeScore(answers);
+      // ajoute à l'historique perso
+      setState(prev => ({
+        ...prev,
+        myAnswers: [...prev.myAnswers, { week:`S${parseInt(prev.campaignWeek.slice(1))+1}`, score }],
+        campaignWeek: `S${parseInt(prev.campaignWeek.slice(1))+1}`,
+      }));
+      setFinished(true);
+    }
+  };
+
+  if (finished) {
+    const sc = computeScore(answers);
+    const lvl = scoreLevel(sc);
+    return (
+      <div className="text-center space-y-4 pt-6 fadein">
+        <div className="text-5xl">✅</div>
+        <h2 className="font-display text-2xl font-bold">Merci, c'est enregistré.</h2>
+        <p className="text-sm text-gray-600 px-4">Vos réponses individuelles ne sont jamais transmises à votre employeur. Seuls les agrégats par équipe (≥5 personnes) sont communiqués.</p>
+        <div className="my-6">
+          <div className={`inline-flex items-center justify-center w-32 h-32 rounded-full ring-gradient`}
+            style={{ '--g':lvl.hex, '--p':`${sc}%` }}>
+            <div className="bg-white w-24 h-24 rounded-full flex items-center justify-center">
+              <div>
+                <div className={`font-display text-3xl font-bold ${lvl.text}`}>{sc}</div>
+                <div className="text-[10px] text-gray-500">/100</div>
+              </div>
+            </div>
+          </div>
+          <div className="text-sm font-semibold mt-2">{lvl.label === 'Vert' ? 'Bon équilibre cette semaine' : lvl.label === 'Orange' ? 'Vigilance — quelques signaux à surveiller' : 'Signaux préoccupants — pensez à utiliser les ressources'}</div>
+        </div>
+        <button onClick={onDone} className="bg-ink text-white font-bold py-3 px-6 rounded-xl">Voir mon historique</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fadein">
+      <div className="mb-5">
+        <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <span>Question {step+1} / {SENTINEL_QUESTIONS.length}</span>
+          <span>{Math.round(progress)}%</span>
+        </div>
+        <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-brand-600 to-accent transition-all" style={{ width:`${progress}%` }} />
+        </div>
+      </div>
+
+      <Card className="p-6 mb-4">
+        <div className="text-[10px] uppercase tracking-wider text-brand-600 font-bold">{q.axis}</div>
+        <div className="font-bold text-base mt-2 leading-relaxed">{q.text}</div>
+        <div className="space-y-2 mt-5">
+          {LIKERT.map(o => (
+            <button key={o.val}
+              onClick={()=>setAnswers(a => ({...a, [q.id]:o.val}))}
+              className={`w-full flex items-center gap-3 p-3.5 rounded-xl border-2 text-sm font-medium text-left transition
+                ${selected===o.val ? 'border-brand-600 bg-brand-50 text-brand-700' : 'border-gray-200 hover:border-brand-400 hover:bg-brand-50/50'}`}>
+              <span className="text-xl">{o.emoji}</span>
+              <span>{o.label}</span>
+            </button>
+          ))}
+        </div>
+      </Card>
+
+      <div className="bg-brand-50 border border-brand-100 rounded-xl p-3 text-[11px] text-brand-800 flex gap-2 mb-4">
+        <span>🔒</span>
+        <span>Réponses chiffrées · agrégées par équipe ≥5 · non transmissibles individuellement à l'employeur (RGPD).</span>
+      </div>
+
+      <button disabled={selected==null} onClick={next}
+        className={`w-full py-4 rounded-xl font-bold text-white transition
+          ${selected!=null ? 'bg-gradient-to-r from-brand-600 to-accent hover:opacity-95' : 'bg-gray-300 cursor-not-allowed'}`}>
+        {step===SENTINEL_QUESTIONS.length-1 ? 'Envoyer mes réponses' : 'Question suivante →'}
+      </button>
+    </div>
+  );
+}
+
+function SalAlert() {
+  return (
+    <div className="space-y-4 fadein">
+      <div className="bg-gradient-to-br from-red-50 to-white border-2 border-red-200 rounded-2xl p-6 text-center">
+        <div className="text-5xl mb-2 inline-block pulse-ring rounded-full">🚨</div>
+        <div className="font-display text-xl font-bold text-red-700">Vos réponses indiquent un risque de burnout</div>
+        <p className="text-sm text-red-900/70 mt-2 leading-relaxed">Vous n'êtes pas seul(e). Voici les actions immédiates à votre disposition. <b>Aucune information n'est partagée avec votre employeur.</b></p>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-900 leading-relaxed">
+        💡 Le burnout est reconnu par la jurisprudence depuis l'arrêt Cass. soc. 7 mars 2024. Vous avez des droits — utilisez-les.
+      </div>
+
+      {[
+        { n:1, t:'Appeler la hotline psychologue', s:'Anonyme · 7j/7 · 0800 000 000 · réponse <48h' },
+        { n:2, t:'Demander une visite médecin du travail', s:'Droit garanti sans accord employeur (Art. R4624-34)' },
+        { n:3, t:'Consulter mes droits CPAM', s:'Procédure maladie professionnelle CERFA n°60-3950' },
+        { n:4, t:'Activer un suivi avec un psychologue', s:'Téléconsultation prise en charge à 100%' },
+      ].map(a => (
+        <Card key={a.n} className="p-4 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold text-sm">{a.n}</div>
+          <div className="flex-1">
+            <div className="font-bold text-sm">{a.t}</div>
+            <div className="text-xs text-gray-500 mt-0.5">{a.s}</div>
+          </div>
+          <div className="text-gray-300">›</div>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function SalResources() {
+  const tabs = [{id:'self',l:'Pour moi'},{id:'urg',l:'Urgence'},{id:'rights',l:'Droits'}];
+  const [t, setT] = useState('self');
+  const cards = {
+    self: [
+      { i:'🧘', t:'Méditation guidée anti-burnout', d:'Programme 7 jours · 10 min/jour · validé INSERM', tag:'Audio · 7 jours', c:'brand' },
+      { i:'📔', t:'Journal émotionnel privé', d:'Notez vos émotions. L\'IA détecte vos patterns de stress.', tag:'Privé · Chiffré', c:'ok' },
+      { i:'🎧', t:'Techniques de respiration', d:'Cohérence cardiaque · 3 sessions/jour · 5 min', tag:'Audio', c:'brand' },
+    ],
+    urg: [
+      { i:'☎️', t:'Hotline MindWork — psychologue', d:'Anonyme · 7j/7 · réponse sous 48h', tag:'Urgence', c:'danger' },
+      { i:'🆘', t:'3114 — Numéro national prévention suicide', d:'Gratuit · 24h/24 · personnel formé', tag:'Public · gratuit', c:'danger' },
+    ],
+    rights: [
+      { i:'⚖️', t:'Procédure CPAM — Maladie professionnelle', d:'CERFA 60-3950 · délais 15 jours · CRRMP', tag:'Guide pratique', c:'warn' },
+      { i:'🏥', t:'Demande médecin du travail', d:'Visite spontanée — droit garanti sans accord employeur', tag:'Contact direct', c:'brand' },
+      { i:'📜', t:'Cass. soc. 7 mars 2024 (n°22-19.426)', d:'L\'employeur est désormais présumé responsable.', tag:'Jurisprudence', c:'warn' },
+    ],
+  };
+  return (
+    <div className="fadein">
+      <div className="mb-1">
+        <h1 className="font-display text-2xl font-bold">Mes ressources</h1>
+        <div className="text-xs text-gray-500 mt-0.5">Sélectionnées par l'IA selon votre profil</div>
+      </div>
+      <div className="flex gap-2 my-4 border-b border-gray-200">
+        {tabs.map(x => (
+          <button key={x.id} onClick={()=>setT(x.id)}
+            className={`px-3 py-2 text-sm font-semibold border-b-2 -mb-px ${t===x.id?'border-brand-600 text-brand-700':'border-transparent text-gray-500'}`}>{x.l}</button>
+        ))}
+      </div>
+      <div className="space-y-3">
+        {cards[t].map((c,i) => (
+          <Card key={i} className="p-4 flex gap-3">
+            <div className="text-2xl">{c.i}</div>
+            <div className="flex-1">
+              <div className="font-bold text-sm">{c.t}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{c.d}</div>
+              <Pill color={c.c}>{c.tag}</Pill>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SalProfile() {
+  const { state } = useApp();
+  const me = state.user.me;
+  const last = state.myAnswers[state.myAnswers.length-1];
+  const lvl = scoreLevel(last.score);
+  return (
+    <div className="fadein">
+      <div className="text-center pt-2 pb-4">
+        <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-brand-600 to-accent text-white font-display font-black text-2xl flex items-center justify-center">{me.initials}</div>
+        <div className="font-display text-xl font-bold mt-3">{me.name}</div>
+        <div className="text-xs text-gray-500 mt-1">{me.role} · {me.tenure} · {me.team}</div>
+      </div>
+
+      <div className="flex justify-center my-4">
+        <div>
+          <div className="w-36 h-36 rounded-full ring-gradient flex items-center justify-center" style={{ '--g':lvl.hex, '--p':`${last.score}%` }}>
+            <div className="bg-white w-28 h-28 rounded-full flex items-center justify-center">
+              <div className="text-center">
+                <div className={`font-display text-3xl font-bold ${lvl.text}`}>{last.score}</div>
+                <div className="text-[10px] text-gray-500">/100</div>
+              </div>
+            </div>
+          </div>
+          <div className="text-center text-xs text-gray-500 mt-2">Score bien-être {last.week}</div>
+        </div>
+      </div>
+
+      <div className="font-bold text-sm mb-2">Historique (8 semaines)</div>
+      <div className="space-y-1.5">
+        {state.myAnswers.map((a,i) => {
+          const l = scoreLevel(a.score);
+          const w = `${a.score}%`;
+          const isLast = i===state.myAnswers.length-1;
+          return (
+            <div key={i} className="flex items-center gap-3 py-1.5 border-b border-gray-100 last:border-0">
+              <div className={`text-xs ${isLast?'font-bold':''} text-gray-500 w-10`}>{a.week}</div>
+              <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full rounded-full" style={{ width:w, backgroundColor:l.hex }} />
+              </div>
+              <div className={`text-xs font-bold w-8 text-right`} style={{ color:l.hex }}>{a.score}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="bg-brand-50 border border-brand-100 rounded-xl p-3 text-[11px] text-brand-800 mt-5">
+        🔒 Votre historique personnel est uniquement visible par vous. Il n'est jamais communiqué à votre employeur ou à vos collègues.
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   9. MANAGER VIEW
+===================================================================== */
+function ManagerView() {
+  const { state } = useApp();
+  const [tab, setTab] = useState('overview');
+  // Le manager voit l'équipe Production
+  const myTeam = state.teams.find(t => t.id==='prod');
+  const hist = state.history.prod;
+  const last = hist[hist.length-1];
+  const lvl = scoreLevel(last.score);
+
+  const items = [
+    { id:'overview', icon:'📊', label:'Mon équipe' },
+    { id:'ripple',   icon:'🌊', label:'RIPPLE', badge: state.ripple.filter(r => r.target==='Manager').length },
+    { id:'plan',     icon:'🎯', label:"Plan d'action" },
+    { id:'resources',icon:'📚', label:'Ressources manager' },
+  ];
+
+  return (
+    <Shell sidebar={<Sidebar items={items} current={tab} onChange={setTab} />}>
+      {tab==='overview' && (
+        <div className="space-y-6 fadein">
+          <SectionTitle kicker="Ma vue manager" title={`Équipe ${myTeam.name} (${myTeam.size} personnes)`}
+            action={<Pill color="brand">Anonymat préservé · agrégation ≥5</Pill>} />
+
+          <div className="grid md:grid-cols-4 gap-4">
+            <Stat label={`Score ${last.week}`} value={last.score} sub={lvl.label} tone={lvl.label==='Vert'?'ok':lvl.label==='Orange'?'warn':'danger'} />
+            <Stat label="Tendance 4 sem." value={`${last.score-hist[hist.length-5].score>0?'+':''}${last.score-hist[hist.length-5].score}`} sub="vs S12" />
+            <Stat label="Participation" value="86%" sub="12/14 répondants" tone="brand" />
+            <Stat label="Alertes actives" value="2" sub="à traiter" tone="danger" />
+          </div>
+
+          <Card className="p-6">
+            <div className="font-display text-lg font-bold mb-4">Évolution du score d'équipe</div>
+            <div style={{ width:'100%', height:240 }}>
+              <ResponsiveContainer>
+                <AreaChart data={hist}>
+                  <defs>
+                    <linearGradient id="gradTeam" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.4}/>
+                      <stop offset="100%" stopColor="#4F46E5" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis dataKey="week" stroke="#6B7280" fontSize={12} />
+                  <YAxis domain={[0,100]} stroke="#6B7280" fontSize={12} />
+                  <Tooltip contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+                  <Area type="monotone" dataKey="score" stroke="#4F46E5" strokeWidth={2.5} fill="url(#gradTeam)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <div className="font-display text-lg font-bold mb-3">Signaux faibles détectés</div>
+              <ul className="space-y-3">
+                <li className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-danger mt-2"/>
+                  <div>
+                    <div className="font-semibold text-sm">Charge de travail perçue comme excessive</div>
+                    <div className="text-xs text-gray-500">7 répondants /14 sur les 3 dernières semaines</div>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-warn mt-2"/>
+                  <div>
+                    <div className="font-semibold text-sm">Sommeil dégradé lié au travail</div>
+                    <div className="text-xs text-gray-500">5 répondants /14 — corrélé avec heures sup. déclarées</div>
+                  </div>
+                </li>
+                <li className="flex gap-3">
+                  <div className="w-2 h-2 rounded-full bg-warn mt-2"/>
+                  <div>
+                    <div className="font-semibold text-sm">Sentiment d'utilité en baisse (MBI-EP)</div>
+                    <div className="text-xs text-gray-500">Score moyen passé de 3.2 à 2.4 en 6 semaines</div>
+                  </div>
+                </li>
+              </ul>
+            </Card>
+
+            <Card className="p-6">
+              <div className="font-display text-lg font-bold mb-3">Actions recommandées par l'IA</div>
+              <ul className="space-y-3 text-sm">
+                <li className="flex gap-2"><span>1.</span> Programmer un atelier RIPPLE "Charge mentale" cette semaine</li>
+                <li className="flex gap-2"><span>2.</span> Tenir un point d'équipe pour redistribuer les priorités</li>
+                <li className="flex gap-2"><span>3.</span> Compléter votre formation "Reconnaître les signaux faibles" (12 min)</li>
+                <li className="flex gap-2"><span>4.</span> Notifier la DRH pour suivi formel (DUERP)</li>
+              </ul>
+              <button className="mt-5 w-full bg-ink text-white font-semibold py-2.5 rounded-lg text-sm">Générer un plan d'action</button>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {tab==='ripple' && <RippleCatalog forRole="Manager" />}
+
+      {tab==='plan' && (
+        <div className="fadein">
+          <SectionTitle kicker="Mon plan d'action" title="Plan d'action équipe Production" />
+          <Card className="p-6">
+            <ol className="space-y-4">
+              {[
+                { d:'S15', t:'Atelier RIPPLE — Charge mentale', who:'Tous (1h)', st:'Programmé' },
+                { d:'S16', t:'Point hebdo redistribution priorités', who:'Manager + équipe', st:'En cours' },
+                { d:'S17', t:'Formation "Manager Protecteur"', who:'Pierre Dumont', st:'À faire' },
+                { d:'S18', t:'Bilan SENTINEL avec DRH', who:'Manager + DRH', st:'Planifié' },
+              ].map((a,i) => (
+                <li key={i} className="flex items-start gap-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                  <div className="w-12 text-xs font-bold text-brand-700">{a.d}</div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-sm">{a.t}</div>
+                    <div className="text-xs text-gray-500 mt-0.5">{a.who}</div>
+                  </div>
+                  <Pill color={a.st==='En cours'?'warn':a.st==='Programmé'?'brand':'gray'}>{a.st}</Pill>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </div>
+      )}
+
+      {tab==='resources' && (
+        <div className="fadein">
+          <SectionTitle kicker="Boîte à outils" title="Ressources manager" />
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              { i:'📘', t:'Guide INRS — Manager protecteur', d:'40 pages · PDF' },
+              { i:'🎬', t:'Webinaire ANACT QVCT', d:'45 min · replay' },
+              { i:'📋', t:'Trame entretien retour après arrêt', d:'Modèle Word' },
+              { i:'⚖️', t:'Cadre légal — Art. L.4121 expliqué', d:'Fiche juridique' },
+            ].map((r,i) => (
+              <Card key={i} className="p-5 flex gap-3">
+                <div className="text-3xl">{r.i}</div>
+                <div>
+                  <div className="font-bold">{r.t}</div>
+                  <div className="text-xs text-gray-500 mt-1">{r.d}</div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </Shell>
+  );
+}
+
+function RippleCatalog({ forRole=null }) {
+  const { state } = useApp();
+  const list = forRole ? state.ripple.filter(r => r.target===forRole || r.target==='Tous') : state.ripple;
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Module RIPPLE" title="Catalogue micro-formations"
+        action={<Pill color="brand">{list.length} formations</Pill>} />
+      <div className="grid md:grid-cols-2 gap-4">
+        {list.map(r => {
+          const pct = Math.round((r.completed/r.total)*100);
+          return (
+            <Card key={r.id} className="p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <Pill color={r.target==='Manager'?'brand':r.target==='Élu CSE'?'warn':'gray'}>{r.target}</Pill>
+                  <div className="font-display font-bold mt-2 text-lg leading-snug">{r.title}</div>
+                  <div className="text-xs text-gray-500 mt-1">{r.format} · {r.duration} min</div>
+                </div>
+                <button className="bg-ink text-white text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap">Démarrer</button>
+              </div>
+              <div className="mt-4">
+                <div className="flex justify-between text-[11px] text-gray-500 mb-1">
+                  <span>Adoption</span>
+                  <span>{r.completed}/{r.total} ({pct}%)</span>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-brand-600 to-accent" style={{ width:`${pct}%` }} />
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* =====================================================================
+   10. RH VIEW
+===================================================================== */
+function RHView() {
+  const { state } = useApp();
+  const [tab, setTab] = useState('home');
+
+  const items = [
+    { id:'home',     icon:'📊', label:'Vue d\'ensemble' },
+    { id:'teams',    icon:'👥', label:'Équipes' },
+    { id:'alerts',   icon:'🚨', label:'Alertes', badge: 2 },
+    { id:'ripple',   icon:'🌊', label:'RIPPLE' },
+    { id:'cse',      icon:'📋', label:'Rapport CSE' },
+    { id:'roi',      icon:'💰', label:'ROI' },
+  ];
+
+  // Compute global aggregates
+  const teamScores = state.teams.map(t => {
+    const h = state.history[t.id];
+    return { ...t, score: h[h.length-1].score };
+  });
+  const globalScore = Math.round(teamScores.reduce((a,b) => a+b.score, 0) / teamScores.length);
+  const globalLvl = scoreLevel(globalScore);
+
+  return (
+    <Shell sidebar={<Sidebar items={items} current={tab} onChange={setTab} />}>
+      {tab==='home' && <RHHome global={globalScore} lvl={globalLvl} teamScores={teamScores} />}
+      {tab==='teams' && <RHTeams teamScores={teamScores} />}
+      {tab==='alerts' && <RHAlerts />}
+      {tab==='ripple' && <RippleCatalog />}
+      {tab==='cse' && <RHCSEReport />}
+      {tab==='roi' && <RHROI />}
+    </Shell>
+  );
+}
+
+function RHHome({ global, lvl, teamScores }) {
+  const { state } = useApp();
+  // historique global = moyenne par semaine
+  const globalHist = WEEKS.map((w, i) => ({
+    week: w,
+    score: Math.round(state.teams.reduce((a, t) => a + state.history[t.id][i].score, 0) / state.teams.length),
+  }));
+
+  return (
+    <div className="space-y-6 fadein">
+      <SectionTitle kicker="Tableau de bord" title="Vue d'ensemble RPS"
+        action={<div className="flex gap-2">
+          <Pill color="ink">Semaine {state.campaignWeek}</Pill>
+          <Pill color="brand">DUERP à jour</Pill>
+        </div>} />
+
+      {/* Bannière alerte rouge — équipe en difficulté */}
+      <div className="rounded-2xl border-2 border-red-400 bg-red-50 p-5 flex items-start gap-4 shadow-soft">
+        <div className="text-3xl">⚠️</div>
+        <div className="flex-1">
+          <div className="font-display text-lg font-bold text-red-700 mb-1">Alerte Rouge — Équipe Production (14 pers.)</div>
+          <div className="text-sm text-red-900/80">Score de détresse en hausse de <b>+7 points</b> sur la semaine. Action immédiate recommandée par l'IA MindWork.</div>
+        </div>
+        <button onClick={()=>setTab('alerts')} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium whitespace-nowrap">Voir les recommandations →</button>
+      </div>
+
+
+      <div className="grid md:grid-cols-4 gap-4">
+        <Stat label="Score global" value={global} sub={lvl.label} tone={lvl.label==='Vert'?'ok':lvl.label==='Orange'?'warn':'danger'} />
+        <Stat label="Salariés couverts" value={state.company.employees} sub="42/42 (100%)" tone="brand" />
+        <Stat label="Participation" value="83%" sub="35/42 répondants S15" />
+        <Stat label="Alertes ouvertes" value="2" sub="dont 1 critique" tone="danger" />
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        <Card className="p-6 lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <div className="font-display text-lg font-bold">Évolution du score collectif (8 semaines)</div>
+            <Pill color="gray">Anonymisé</Pill>
+          </div>
+          <div style={{ width:'100%', height:260 }}>
+            <ResponsiveContainer>
+              <LineChart data={globalHist}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis dataKey="week" stroke="#6B7280" fontSize={12} />
+                <YAxis domain={[40,100]} stroke="#6B7280" fontSize={12} />
+                <Tooltip contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+                <Line type="monotone" dataKey="score" stroke="#4F46E5" strokeWidth={3} dot={{ r:4, fill:'#4F46E5' }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <div className="font-display text-lg font-bold mb-4">Répartition par niveau</div>
+          <div style={{ width:'100%', height:200 }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie data={[
+                  { name:'Vert',   value: teamScores.filter(t=>t.score>=70).reduce((a,b)=>a+b.size,0), fill:'#16A34A' },
+                  { name:'Orange', value: teamScores.filter(t=>t.score>=50&&t.score<70).reduce((a,b)=>a+b.size,0), fill:'#D97706' },
+                  { name:'Rouge',  value: teamScores.filter(t=>t.score<50).reduce((a,b)=>a+b.size,0), fill:'#DC2626' },
+                ]} dataKey="value" innerRadius={50} outerRadius={80} paddingAngle={2}>
+                </Pie>
+                <Tooltip />
+                <Legend iconSize={8} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="font-display text-lg font-bold">Score par équipe (semaine en cours)</div>
+          <button className="text-xs text-brand-700 font-semibold hover:underline">Exporter CSV</button>
+        </div>
+        <div style={{ width:'100%', height:260 }}>
+          <ResponsiveContainer>
+            <BarChart data={teamScores} layout="vertical" margin={{ left:20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis type="number" domain={[0,100]} stroke="#6B7280" fontSize={12} />
+              <YAxis type="category" dataKey="name" stroke="#6B7280" fontSize={12} width={130} />
+              <Tooltip contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+              <Bar dataKey="score" radius={[0,8,8,0]}>
+                {teamScores.map((t,i) => (
+                  <Cell key={i} fill={scoreLevel(t.score).hex} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      {/* Bloc ROI synthétique */}
+      <div className="rounded-2xl p-6 text-white" style={{background:'linear-gradient(135deg,#1E1A3C 0%,#2D2558 100%)'}}>
+        <div className="text-xs uppercase tracking-wider opacity-70 mb-2">Depuis l'activation MindWork (3 mois)</div>
+        <div className="flex items-start justify-between flex-wrap gap-6">
+          <div className="flex-1 min-w-[260px]">
+            <div className="font-display text-2xl font-bold mb-1">📊 Retour sur investissement estimé</div>
+            <div className="text-sm opacity-80">Aérotech Occitanie — 42 salariés · Abonnement : 1 050 €/mois</div>
+          </div>
+          <div className="font-display text-5xl font-bold" style={{color:'#A5B4FC'}}>× 4,2</div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6 mt-6 pt-6 border-t border-white/15">
+          <div><div className="font-display text-3xl font-bold" style={{color:'#A5B4FC'}}>- 18%</div><div className="text-xs opacity-75 mt-1">Absentéisme court terme</div></div>
+          <div><div className="font-display text-3xl font-bold" style={{color:'#A5B4FC'}}>29 k€</div><div className="text-xs opacity-75 mt-1">Économies estimées (3 mois)</div></div>
+          <div><div className="font-display text-3xl font-bold" style={{color:'#A5B4FC'}}>100%</div><div className="text-xs opacity-75 mt-1">Conformité OPCO formations</div></div>
+        </div>
+      </div>
+
+      {/* Cards Recommandations IA */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-lg">🤖</span>
+          <div className="font-display text-lg font-bold">Recommandations IA · Actions prioritaires cette semaine</div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="rounded-2xl bg-white border border-red-200 p-5 shadow-soft">
+            <div className="flex items-center justify-between mb-2"><div className="text-xl">🚨</div><span className="text-[10px] font-bold px-2 py-1 rounded-md bg-red-100 text-red-700">URGENT</span></div>
+            <div className="font-display font-bold mb-1">Atelier Flash Production</div>
+            <div className="text-xs text-ink-600">Score critique détecté. Séance de décharge émotionnelle recommandée sous 48h pour l'équipe Production.</div>
+          </div>
+          <div className="rounded-2xl bg-white border border-emerald-200 p-5 shadow-soft">
+            <div className="flex items-center justify-between mb-2"><div className="text-xl">🎓</div><span className="text-[10px] font-bold px-2 py-1 rounded-md bg-emerald-100 text-emerald-700">100% OPCO</span></div>
+            <div className="font-display font-bold mb-1">Formation Manager N+1</div>
+            <div className="text-xs text-ink-600">Module « Déceler le stress silencieux » — 3h. Financé ATLAS. 3 managers concernés.</div>
+          </div>
+          <div className="rounded-2xl bg-white border border-amber-200 p-5 shadow-soft">
+            <div className="flex items-center justify-between mb-2"><div className="text-xl">📋</div><span className="text-[10px] font-bold px-2 py-1 rounded-md bg-amber-100 text-amber-700">RECOMMANDÉ</span></div>
+            <div className="font-display font-bold mb-1">Mise à jour DUERP</div>
+            <div className="text-xs text-ink-600">2 nouvelles zones de risque détectées. Intégration automatique possible en 1 clic.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+function RHTeams({ teamScores }) {
+  const { state } = useApp();
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Équipes" title="Détail par unité de travail" />
+      <div className="grid md:grid-cols-2 gap-4">
+        {teamScores.map(t => {
+          const h = state.history[t.id];
+          const lvl = scoreLevel(t.score);
+          const trend = h[h.length-1].score - h[h.length-5].score;
+          return (
+            <Card key={t.id} className="p-5">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="font-display text-lg font-bold">{t.name}</div>
+                  <div className="text-xs text-gray-500 mt-0.5">{t.size} salariés</div>
+                </div>
+                <div className="text-right">
+                  <div className={`font-display text-3xl font-bold ${lvl.text}`}>{t.score}</div>
+                  <div className={`text-xs font-semibold ${trend>=0?'text-ok':'text-danger'}`}>{trend>=0?'↑':'↓'} {Math.abs(trend)} pts</div>
+                </div>
+              </div>
+              <div style={{ width:'100%', height:80 }} className="mt-2">
+                <ResponsiveContainer>
+                  <LineChart data={h}>
+                    <Line type="monotone" dataKey="score" stroke={lvl.hex} strokeWidth={2} dot={false} />
+                    <YAxis hide domain={[40,100]} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <Pill color={lvl.label==='Vert'?'ok':lvl.label==='Orange'?'warn':'danger'}>{lvl.label}</Pill>
+                <button className="text-brand-700 font-semibold hover:underline">Voir détail →</button>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function RHAlerts() {
+  const alerts = [
+    {
+      id:'a1', level:'Critique', team:"Bureau d'études", week:'S15',
+      title:'Score collectif < 50 (3 semaines consécutives)',
+      desc:'7 répondants sur 9 signalent des tensions interpersonnelles. Restructuration D&S identifiée comme facteur déclenchant. Médecin du travail informé.',
+      actions:['Médiation collective S17 ✓ programmée','Atelier RIPPLE déployé','DUERP mis à jour automatiquement']
+    },
+    {
+      id:'a2', level:'Élevé', team:'Production', week:'S15',
+      title:'Dégradation continue depuis S11 (-14 pts)',
+      desc:'Cadence record liée à objectif Airbus 870 avions/an. Heures supplémentaires en hausse de 23%.',
+      actions:['Audit charge mensuel ✓','Atelier "Charge mentale" S15','Revue plannings S16']
+    },
+  ];
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Alertes" title="Alertes ouvertes" />
+      <div className="space-y-4">
+        {alerts.map(a => (
+          <Card key={a.id} className={`p-6 border-l-4 ${a.level==='Critique'?'border-l-danger':'border-l-warn'}`}>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Pill color={a.level==='Critique'?'danger':'warn'}>● {a.level}</Pill>
+                  <span className="text-xs text-gray-500">{a.team} · détectée {a.week}</span>
+                </div>
+                <div className="font-display text-lg font-bold mt-2">{a.title}</div>
+                <p className="text-sm text-gray-600 mt-2 leading-relaxed">{a.desc}</p>
+              </div>
+              <button className="text-xs text-brand-700 font-semibold hover:underline whitespace-nowrap">Marquer traitée</button>
+            </div>
+            <div className="border-t border-gray-100 pt-3">
+              <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-2">Actions en cours</div>
+              <ul className="space-y-1.5">
+                {a.actions.map((act,i) => (
+                  <li key={i} className="flex gap-2 text-sm"><span className="text-ok">✓</span> {act}</li>
+                ))}
+              </ul>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RHCSEReport() {
+  const { state } = useApp();
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Module SHIELD" title="Rapport CSE — Avril 2026"
+        action={<div className="flex gap-2">
+          <button className="text-xs px-3 py-2 rounded-lg border border-gray-200 hover:bg-white">Aperçu PDF</button>
+          <button className="text-xs px-3 py-2 rounded-lg bg-ink text-white font-semibold">Générer & envoyer</button>
+        </div>} />
+
+      <Card className="p-8 max-w-3xl">
+        <div className="border-b border-gray-200 pb-4 mb-6">
+          <Logo small />
+          <div className="text-xs text-gray-500 mt-2">Rapport mensuel de prévention RPS · Article L.2312-9 du Code du travail</div>
+        </div>
+
+        <h3 className="font-display text-2xl font-bold mb-1">Rapport CSE — Période : avril 2026</h3>
+        <div className="text-sm text-gray-600 mb-6">{state.company.name} · SIRET {state.company.siret} · {state.company.employees} salariés</div>
+
+        <section className="mb-6">
+          <h4 className="font-display font-bold text-base mb-2">1. Indicateurs clés</h4>
+          <table className="w-full text-sm">
+            <tbody>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Taux de participation SENTINEL</td><td className="py-2 text-right font-semibold">83%</td></tr>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Score moyen (8 semaines)</td><td className="py-2 text-right font-semibold">66 / 100</td></tr>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Équipes en alerte rouge</td><td className="py-2 text-right font-semibold text-danger">1 (Bureau d'études)</td></tr>
+              <tr className="border-b border-gray-100"><td className="py-2 text-gray-600">Équipes en alerte orange</td><td className="py-2 text-right font-semibold text-warn">2 (Production, Qualité)</td></tr>
+              <tr><td className="py-2 text-gray-600">Risques RPS identifiés au DUERP</td><td className="py-2 text-right font-semibold">{state.duerpRisks.length}</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section className="mb-6">
+          <h4 className="font-display font-bold text-base mb-2">2. Actions de prévention engagées</h4>
+          <ul className="space-y-1.5 text-sm">
+            <li>• 4 ateliers RIPPLE déployés ce mois (charge mentale, communication non-violente, déconnexion)</li>
+            <li>• Programme "Manager Protecteur" lancé pour 6 managers</li>
+            <li>• Médiation collective programmée Bureau d'études S17</li>
+            <li>• 3 visites médicales spontanées initiées via la plateforme</li>
+          </ul>
+        </section>
+
+        <section className="mb-6">
+          <h4 className="font-display font-bold text-base mb-2">3. Mise à jour du DUERP</h4>
+          <p className="text-sm text-gray-700 leading-relaxed">Le Document Unique a été mis à jour automatiquement le 14/04/2026 suite à l'identification d'un nouveau risque (charge de travail excessive en Production). Les mesures de prévention associées sont consignées et tracées (voir audit SHIELD).</p>
+        </section>
+
+        <section className="mb-2">
+          <h4 className="font-display font-bold text-base mb-2">4. Prochaines échéances</h4>
+          <ul className="space-y-1.5 text-sm">
+            <li>• Bilan trimestriel CSE : 15 mai 2026</li>
+            <li>• Semaine QVCT nationale : 15-19 juin 2026</li>
+            <li>• Mise à jour annuelle DUERP : 31 mars 2027</li>
+          </ul>
+        </section>
+
+        <div className="border-t border-gray-200 mt-6 pt-4 text-[10px] text-gray-500">
+          Rapport généré automatiquement par MindWork SHIELD · Hash de validation : f7a3c9d2e8b14056 · Conforme RGPD (art. 32) et HDS.
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function RHROI() {
+  const data = [
+    { mois:'M1', invest:1000, eco:0 },
+    { mois:'M2', invest:2000, eco:0 },
+    { mois:'M3', invest:3000, eco:1500 },
+    { mois:'M4', invest:4000, eco:4500 },
+    { mois:'M5', invest:5000, eco:9000 },
+    { mois:'M6', invest:6000, eco:15000 },
+    { mois:'M7', invest:7000, eco:22000 },
+    { mois:'M8', invest:8000, eco:30000 },
+    { mois:'M9', invest:9000, eco:40000 },
+    { mois:'M10', invest:10000, eco:51000 },
+    { mois:'M11', invest:11000, eco:63000 },
+    { mois:'M12', invest:12000, eco:76000 },
+  ];
+  return (
+    <div className="fadein space-y-6">
+      <SectionTitle kicker="Retour sur investissement" title="ROI MindWork — projection 12 mois" />
+
+      <div className="grid md:grid-cols-3 gap-4">
+        <Stat label="Investissement annuel" value="12 600 €" sub="42 sal × 25€ × 12 mois" tone="ink" />
+        <Stat label="Économies estimées" value="76 000 €" sub="2 arrêts longs évités" tone="ok" />
+        <Stat label="ROI" value="x6" sub="Payback : 4 mois" tone="brand" />
+      </div>
+
+      <Card className="p-6">
+        <div className="font-display text-lg font-bold mb-4">Investissement vs économies cumulées</div>
+        <div style={{ width:'100%', height:280 }}>
+          <ResponsiveContainer>
+            <AreaChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis dataKey="mois" stroke="#6B7280" fontSize={12} />
+              <YAxis stroke="#6B7280" fontSize={12} tickFormatter={v=>`${v/1000}k`} />
+              <Tooltip formatter={v => `${v.toLocaleString('fr')} €`} contentStyle={{ borderRadius:12, border:'1px solid #E5E7EB' }} />
+              <Area type="monotone" dataKey="invest" stroke="#94A3B8" fill="#E5E7EB" name="Investissement" />
+              <Area type="monotone" dataKey="eco" stroke="#16A34A" fill="#BBF7D0" name="Économies" />
+              <Legend />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+
+      <Card className="p-6 bg-brand-50 border-brand-200">
+        <div className="font-display text-lg font-bold text-brand-900">Hypothèses de calcul</div>
+        <ul className="text-sm text-brand-900 mt-2 space-y-1 leading-relaxed">
+          <li>• Coût moyen d'un arrêt long lié au burnout : 45 000 € (source WTW 2025)</li>
+          <li>• Réduction de l'absentéisme attendue : -30% (benchmark sectoriel pilotes 2025)</li>
+          <li>• Hypothèse conservatrice : 2 arrêts évités sur 12 mois pour 42 salariés</li>
+          <li>• Économie marginale non comptée : turnover, recrutement, perte de compétences clés</li>
+        </ul>
+      </Card>
+    </div>
+  );
+}
+
+/* =====================================================================
+   11. ADMIN DUERP VIEW
+===================================================================== */
+function AdminView() {
+  const [tab, setTab] = useState('duerp');
+  const items = [
+    { id:'duerp',  icon:'📄', label:'DUERP' },
+    { id:'audit',  icon:'🔐', label:'Audit trail' },
+    { id:'legal',  icon:'⚖️', label:'Veille juridique' },
+    { id:'config', icon:'⚙️', label:'Configuration' },
+  ];
+  return (
+    <Shell sidebar={<Sidebar items={items} current={tab} onChange={setTab} />}>
+      {tab==='duerp'  && <DUERP />}
+      {tab==='audit'  && <AuditTrail />}
+      {tab==='legal'  && <LegalWatch />}
+      {tab==='config' && <Config />}
+    </Shell>
+  );
+}
+
+function DUERP() {
+  const { state } = useApp();
+  return (
+    <div className="fadein space-y-6">
+      <SectionTitle kicker="Module SHIELD" title="Document Unique d'Évaluation des Risques (DUERP)"
+        action={<div className="flex gap-2">
+          <button className="text-xs px-3 py-2 rounded-lg border border-gray-200 hover:bg-white">Exporter PDF</button>
+          <button className="text-xs px-3 py-2 rounded-lg bg-ink text-white font-semibold">Mettre à jour</button>
+        </div>} />
+
+      <Card className="p-6">
+        <div className="grid md:grid-cols-3 gap-4 text-sm">
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Entreprise</div><div className="font-semibold">{state.company.name}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">SIRET</div><div className="font-semibold">{state.company.siret}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Convention</div><div className="font-semibold">{state.company.convCollective}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Effectif</div><div className="font-semibold">{state.company.employees} salariés</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Adresse</div><div className="font-semibold">{state.company.address}</div></div>
+          <div><div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Dernière mise à jour</div><div className="font-semibold text-ok">14/04/2026</div></div>
+        </div>
+      </Card>
+
+      <div>
+        <h3 className="font-display text-lg font-bold mb-3">Risques psychosociaux identifiés</h3>
+        <div className="space-y-3">
+          {state.duerpRisks.map(r => (
+            <Card key={r.id} className="p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-gray-400">{r.id.toUpperCase()}</span>
+                    <Pill color={r.level==='Élevé'?'danger':'warn'}>{r.level}</Pill>
+                    <span className="text-xs text-gray-500">{r.unit}</span>
+                  </div>
+                  <div className="font-display font-bold text-lg mt-2">{r.risk}</div>
+                  <div className="text-xs text-gray-500 mt-1">Source : {r.sources}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">Score G×F</div>
+                  <div className={`font-display text-2xl font-bold ${r.level==='Élevé'?'text-danger':'text-warn'}`}>{r.score}</div>
+                  <div className="text-[10px] text-gray-500">G:{r.gravity} × F:{r.frequency}</div>
+                </div>
+              </div>
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <div className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-2">Mesures de prévention en place</div>
+                <ul className="space-y-1 text-sm">
+                  {r.measures.map((m,i) => <li key={i} className="flex gap-2"><span className="text-ok">✓</span> {m}</li>)}
+                </ul>
+                <div className="text-[10px] text-gray-400 mt-3">Dernière révision : {r.lastUpdate}</div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <Card className="p-5 bg-amber-50 border-amber-200">
+        <div className="flex gap-3">
+          <span className="text-2xl">⚖️</span>
+          <div className="text-sm text-amber-900 leading-relaxed">
+            <b>Conformité légale.</b> Ce DUERP est mis à jour automatiquement à chaque détection d'un nouveau risque par SENTINEL. Conforme à l'article L.4121-3 du Code du travail et au décret du 31 mars 2022. Constitue une preuve d'obligation de moyens en cas de contentieux (Cass. soc. 7 mars 2024, n°22-19.426).
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function AuditTrail() {
+  const { state } = useApp();
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Module SHIELD" title="Journal d'audit (preuves juridiques)" />
+      <Card className="overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-200">
+            <tr className="text-left text-[11px] uppercase tracking-wider text-gray-500">
+              <th className="px-4 py-3">Date / heure</th>
+              <th className="px-4 py-3">Acteur</th>
+              <th className="px-4 py-3">Action</th>
+              <th className="px-4 py-3">Hash</th>
+            </tr>
+          </thead>
+          <tbody>
+            {state.auditLog.map((l,i) => (
+              <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
+                <td className="px-4 py-3 text-gray-600">{l.date}</td>
+                <td className="px-4 py-3 font-semibold">{l.actor}</td>
+                <td className="px-4 py-3">{l.action}</td>
+                <td className="px-4 py-3 font-mono text-xs text-gray-400">{l.hash}…</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+      <div className="text-xs text-gray-500 mt-3">Tous les événements sont horodatés et hashés (SHA-256). Stockage HDS. Recevable comme preuve en justice.</div>
+    </div>
+  );
+}
+
+function LegalWatch() {
+  const items = [
+    { d:'2026-03', t:'Décret n°2026-241 — Renforcement obligations RPS pour PME <50 salariés', tag:'Nouveau', c:'danger' },
+    { d:'2026-01', t:'PLFSS 2026 — Article 51 prolongé jusqu\'à fin 2027', tag:'Opportunité', c:'ok' },
+    { d:'2025-11', t:'Grande cause nationale Santé Mentale prolongée 2026', tag:'Politique', c:'brand' },
+    { d:'2025-09', t:'Cass. soc. 18 sept. 2025 — Confirmation jurisprudence 7 mars 2024', tag:'Jurisprudence', c:'warn' },
+    { d:'2025-06', t:'ISO 45003 — Guide ANACT publié pour PME industrielles', tag:'Norme', c:'brand' },
+  ];
+  return (
+    <div className="fadein">
+      <SectionTitle kicker="Veille" title="Veille juridique RPS" />
+      <div className="space-y-2">
+        {items.map((x,i) => (
+          <Card key={i} className="p-4 flex items-center gap-4">
+            <div className="text-xs font-mono text-gray-400 w-16">{x.d}</div>
+            <div className="flex-1 font-semibold text-sm">{x.t}</div>
+            <Pill color={x.c}>{x.tag}</Pill>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Config() {
+  const { state, setState } = useApp();
+  const [name, setName] = useState(state.company.name);
+  const [emp, setEmp] = useState(state.company.employees);
+  const save = () => {
+    setState(prev => ({ ...prev, company: { ...prev.company, name, employees: parseInt(emp)||prev.company.employees }}));
+  };
+  return (
+    <div className="fadein max-w-2xl">
+      <SectionTitle kicker="Paramètres" title="Configuration de l'entreprise" />
+      <Card className="p-6 space-y-4">
+        <div>
+          <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Raison sociale</label>
+          <input value={name} onChange={e=>setName(e.target.value)} className="w-full mt-1.5 border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+        </div>
+        <div>
+          <label className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Effectif</label>
+          <input type="number" value={emp} onChange={e=>setEmp(e.target.value)} className="w-full mt-1.5 border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+        </div>
+        <button onClick={save} className="bg-ink text-white text-sm font-semibold px-4 py-2 rounded-lg">Enregistrer</button>
+        <div className="text-xs text-gray-500">Modifications enregistrées dans votre navigateur (localStorage).</div>
+      </Card>
+    </div>
+  );
+}
+
+/* =====================================================================
+   12. ROOT
+===================================================================== */
+function Root() {
+  const { role } = useApp();
+  if (!role) return <RoleSelect />;
+  if (role==='salarie') return <SalarieView />;
+  if (role==='manager') return <ManagerView />;
+  if (role==='rh')      return <RHView />;
+  if (role==='admin')   return <AdminView />;
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <AppProvider><Root /></AppProvider>
+);
 </script>
 </body>
 </html>
