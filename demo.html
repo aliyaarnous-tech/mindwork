@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>MindWork — Démo privée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAFAF7;--ink:#0F1226;--accent:#5B47D9;--accent-soft:#ECE9FB;--muted:#6B6E85;--card:#FFFFFF;--border:#E6E4DC;--success:#2F8F5C;--warn:#C97B1F;--danger:#C0392B}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Manrope',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.5}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;font-weight:900;letter-spacing:-0.02em}
+h1{font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.05}
+h2{font-size:1.8rem;line-height:1.15}
+h3{font-size:1.25rem}
+button{font-family:inherit;cursor:pointer;border:none}
+a{color:var(--accent);text-decoration:none}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 20% 20%,rgba(91,71,217,0.08),transparent 40%),radial-gradient(circle at 80% 80%,rgba(91,71,217,0.06),transparent 40%),var(--bg)}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:44px 40px;width:100%;max-width:440px;box-shadow:0 30px 60px -30px rgba(15,18,38,0.15)}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.login-logo-mark{width:44px;height:44px;background:var(--accent);border-radius:12px;display:grid;place-items:center;color:#fff;font-size:22px}
+.login-logo-text{font-family:'Fraunces',serif;font-weight:900;font-size:1.5rem}
+.login-card h1{font-size:1.7rem;margin-bottom:8px}
+.login-sub{color:var(--muted);margin-bottom:28px;font-size:0.95rem}
+.login-field{margin-bottom:16px}
+.login-field label{display:block;font-size:0.85rem;font-weight:600;margin-bottom:6px}
+.login-field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-family:inherit;font-size:1rem;background:var(--bg)}
+.login-field input:focus{outline:none;border-color:var(--accent)}
+.login-btn{width:100%;padding:14px;background:var(--accent);color:#fff;border-radius:10px;font-weight:700;font-size:1rem;margin-top:8px}
+.login-btn:hover{background:#4836c4}
+.login-error{background:#FDECEA;color:var(--danger);padding:10px 14px;border-radius:8px;font-size:0.9rem;margin-bottom:16px;display:none}
+.login-error.show{display:block}
+.login-footer{margin-top:28px;padding-top:20px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--muted);text-align:center}
+.app{display:none}.app.active{display:block}
+.header{background:var(--bg);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.header-logo{display:flex;align-items:center;gap:10px}
+.header-mark{width:36px;height:36px;background:var(--accent);border-radius:10px;display:grid;place-items:center;color:#fff;font-size:18px}
+.header-name{font-family:'Fraunces',serif;font-weight:900;font-size:1.3rem}
+.header-right{display:flex;align-items:center;gap:12px}
+.role-badge{background:var(--accent-soft);color:var(--accent);padding:6px 14px;border-radius:999px;font-weight:700;font-size:0.9rem}
+.btn-ghost{background:transparent;padding:8px 14px;border-radius:8px;color:var(--muted);font-size:0.9rem;font-weight:600}
+.btn-ghost:hover{background:var(--accent-soft);color:var(--accent)}
+.btn-outline{border:1px solid var(--border);background:var(--card);padding:8px 16px;border-radius:8px;font-size:0.9rem;font-weight:600}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.hero{max-width:1200px;margin:0 auto;padding:60px 32px 40px}
+.hero-eyebrow{color:var(--accent);font-weight:700;font-size:0.85rem;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:16px}
+.hero h1 em{font-style:italic;color:var(--accent);font-weight:700}
+.hero-sub{color:var(--muted);max-width:700px;margin-top:20px;font-size:1.05rem}
+.roles-grid{max-width:1200px;margin:0 auto;padding:20px 32px 80px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.role-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,border-color 0.15s}
+.role-card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 20px 40px -20px rgba(91,71,217,0.25)}
+.role-emoji{font-size:2rem;margin-bottom:14px}
+.role-card h3{margin-bottom:6px}
+.role-persona{color:var(--accent);font-size:0.9rem;font-weight:600;margin-bottom:12px}
+.role-desc{color:var(--muted);font-size:0.95rem;margin-bottom:16px}
+.role-cta{color:var(--accent);font-weight:700;font-size:0.9rem}
+.role-view{display:none;max-width:1200px;margin:0 auto;padding:40px 32px 80px}
+.role-view.active{display:block}
+.greeting{margin-bottom:32px}
+.greeting .hello{color:var(--muted);font-size:0.95rem}
+.greeting .name{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;margin:4px 0}
+.greeting .ctx{color:var(--muted);font-size:0.95rem}
+.cta-card{background:var(--accent);color:#fff;border-radius:16px;padding:28px;margin-bottom:28px}
+.cta-card .label{font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.85;margin-bottom:10px}
+.cta-card h2{font-size:1.6rem;margin-bottom:8px;color:#fff}
+.cta-card p{opacity:0.9;margin-bottom:18px;font-size:0.95rem}
+.cta-btn{background:#fff;color:var(--accent);padding:12px 22px;border-radius:10px;font-weight:700}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.kpi .v{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;color:var(--warn)}
+.kpi .l{font-size:0.85rem;color:var(--muted);margin-top:4px}
+.section-title{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:900;margin-bottom:16px;margin-top:8px}
+.list-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:14px;display:flex;gap:16px;align-items:flex-start}
+.list-card .icon{font-size:1.8rem}
+.list-card .body h4{font-size:1.05rem;margin-bottom:4px}
+.list-card .body p{color:var(--muted);font-size:0.9rem}
+.alert{padding:14px 18px;border-radius:10px;margin-bottom:12px;font-size:0.95rem}
+.alert.red{background:#FDECEA;color:var(--danger)}
+.alert.orange{background:#FDF2E0;color:var(--warn)}
+.alert.green{background:#E5F5EC;color:var(--success)}
+.table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.table th,.table td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border);font-size:0.95rem}
+.table th{background:var(--bg);font-weight:700;font-size:0.85rem}
+.table tr:last-child td{border-bottom:none}
+.tag{padding:3px 10px;border-radius:999px;font-size:0.78rem;font-weight:700}
+.tag.ok{background:#E5F5EC;color:var(--success)}
+.tag.warn{background:#FDF2E0;color:var(--warn)}
+.tag.alert{background:#FDECEA;color:var(--danger)}
+footer{padding:32px;text-align:center;color:var(--muted);font-size:0.85rem;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">🎤</div>
+      <div class="login-logo-text">MindWork</div>
+    </div>
+    <h1>Démo privée</h1>
+    <p class="login-sub" id="loginSub">Accès réservé · IoT Valley</p>
+    <div class="login-error" id="loginError">Identifiants incorrects.</div>
+    <div class="login-field">
+      <label for="user">Identifiant</label>
+      <input type="text" id="user" autocomplete="username" placeholder="prénom.nom">
+    </div>
+    <div class="login-field">
+      <label for="pwd">Mot de passe</label>
+      <input type="password" id="pwd" autocomplete="current-password" placeholder="••••••••">
+    </div>
+    <button class="login-btn" onclick="tryLogin()">Accéder à la démo →</button>
+    <div class="login-footer">
+      Accès personnel et confidentiel · Données fictives · Démo expire le <span id="expDate"></span>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="app">
+  <header class="header">
+    <div class="header-logo">
+      <div class="header-mark">🎤</div>
+      <div class="header-name">MindWork</div>
+    </div>
+    <div class="header-right">
+      <span class="role-badge" id="roleBadge" style="display:none">Salarié</span>
+      <button class="btn-outline" onclick="showSelector()" id="changeBtn" style="display:none">Changer de rôle</button>
+      <button class="btn-ghost" onclick="logout()">Quitter</button>
+    </div>
+  </header>
+
+  <section id="selector">
+    <div class="hero">
+      <div class="hero-eyebrow">Plateforme de prévention RPS</div>
+      <h1>La conformité psychosociale, <em>enfin à portée des PME industrielles.</em></h1>
+      <p class="hero-sub">Détection précoce par IA · DUERP généré automatiquement · Conformité Article L.4121-1 et ISO 45003. Choisissez un rôle pour explorer la démo.</p>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card" onclick="enterRole('salarie','Salarié')">
+        <div class="role-emoji">🧑‍🏭</div>
+        <h3>Salarié</h3>
+        <div class="role-persona">Sophie Martin · Qualité</div>
+        <div class="role-desc">Questionnaire hebdo, score perso confidentiel, ressources & droits.</div>
+        <div class="role-cta">Entrer dans la démo →</div>
+      </div>
+      <div class="role-card" onclick="enterRole('manager','Manager')">
+        <div class="role-emoji">👥</div>
+        <h3>Manager d'équipe</h3>
+        <div class="role-persona">Pierre Dumont · Production</div>
+        <div class="role-desc">Vue agrégée anonyme de votre équipe, micro-formations RIPPLE.</div>
+        <div class="role-cta">Entrer dans la démo →</div>
+      </div>
+      <div class="role-card" onclick="enterRole('rh','RH / DRH')">
+        <div class="role-emoji">📊</div>
+        <h3>RH / DRH</h3>
+        <div class="role-persona">Marie Lefèvre · Direction RH</div>
+        <div class="role-desc">Dashboard global, alertes, plans d'action, rapport CSE.</div>
+        <div class="role-cta">Entrer dans la démo →</div>
+      </div>
+      <div class="role-card" onclick="enterRole('admin','Admin DUERP')">
+        <div class="role-emoji">⚖️</div>
+        <h3>Admin DUERP</h3>
+        <div class="role-persona">Cabinet juridique · Conformité</div>
+        <div class="role-desc">Génération DUERP, audit trail SHIELD, preuves juridiques.</div>
+        <div class="role-cta">Entrer dans la démo →</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="role-view" id="view-salarie">
+    <div class="greeting">
+      <div class="hello">Bonjour 👋</div>
+      <div class="name">Sophie</div>
+      <div class="ctx">Semaine S17 · Technicienne qualité</div>
+    </div>
+    <div class="cta-card">
+      <div class="label">Questionnaire de la semaine</div>
+      <h2>90 secondes pour vous écouter.</h2>
+      <p>8 questions confidentielles. Vos réponses sont anonymisées et agrégées par équipe.</p>
+      <button class="cta-btn">Commencer →</button>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="v">66</div><div class="l">Mon score · S17</div></div>
+      <div class="kpi"><div class="v">8</div><div class="l">Questionnaires remplis</div></div>
+      <div class="kpi"><div class="v" style="color:var(--success)">+4</div><div class="l">Évolution vs S16</div></div>
+    </div>
+    <div class="section-title">Recommandé pour vous</div>
+    <div class="list-card"><div class="icon">🧘</div><div class="body"><h4>Méditation guidée 7 jours</h4><p>10 min/jour · validé INSERM</p></div></div>
+    <div class="list-card"><div class="icon">📞</div><div class="body"><h4>Ligne d'écoute confidentielle</h4><p>Psychologues partenaires · 24/7 · anonyme</p></div></div>
+    <div class="list-card"><div class="icon">📄</div><div class="body"><h4>Mes droits — Article L.4121-1</h4><p>Vos droits en matière de prévention RPS</p></div></div>
+  </section>
+
+  <section class="role-view" id="view-manager">
+    <div class="greeting">
+      <div class="hello">Bonjour 👋</div>
+      <div class="name">Pierre</div>
+      <div class="ctx">Équipe Production · 24 collaborateurs · Vue agrégée anonyme</div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="v" style="color:var(--success)">72</div><div class="l">Score équipe · S17</div></div>
+      <div class="kpi"><div class="v">87%</div><div class="l">Taux de réponse</div></div>
+      <div class="kpi"><div class="v" style="color:var(--warn)">2</div><div class="l">Signaux d'alerte</div></div>
+      <div class="kpi"><div class="v">3</div><div class="l">RIPPLE actives</div></div>
+    </div>
+    <div class="section-title">Signaux SENTINEL (équipe agrégée)</div>
+    <div class="alert orange">⚠️ Charge perçue en hausse sur l'atelier B (4 semaines consécutives)</div>
+    <div class="alert orange">⚠️ Reconnaissance — sous-score MBI dégradé sur 3 collaborateurs anonymes</div>
+    <div class="alert green">✅ Climat relationnel stable · pas de tension détectée</div>
+    <div class="section-title">Micro-formations RIPPLE recommandées</div>
+    <div class="list-card"><div class="icon">🌊</div><div class="body"><h4>Gérer la charge cognitive en atelier</h4><p>Atelier collectif 45 min · 6 participants suggérés</p></div></div>
+    <div class="list-card"><div class="icon">🌊</div><div class="body"><h4>Feedback de reconnaissance — pratiques managériales</h4><p>Module manager 30 min · à suivre individuellement</p></div></div>
+  </section>
+
+  <section class="role-view" id="view-rh">
+    <div class="greeting">
+      <div class="hello">Bonjour 👋</div>
+      <div class="name">Marie</div>
+      <div class="ctx">Direction RH · 156 collaborateurs · 6 équipes</div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="v">68</div><div class="l">Score global S17</div></div>
+      <div class="kpi"><div class="v">82%</div><div class="l">Taux participation</div></div>
+      <div class="kpi"><div class="v" style="color:var(--danger)">3</div><div class="l">Alertes rouges</div></div>
+      <div class="kpi"><div class="v" style="color:var(--warn)">7</div><div class="l">Alertes oranges</div></div>
+      <div class="kpi"><div class="v" style="color:var(--success)">12</div><div class="l">Plans d'action</div></div>
+    </div>
+    <div class="section-title">Alertes actives</div>
+    <div class="alert red">🚨 Atelier C · burnout score élevé (MBI > seuil) · 2 collaborateurs · action immédiate requise</div>
+    <div class="alert orange">⚠️ Logistique · charge soutenue 6 semaines · plan d'action en cours</div>
+    <div class="alert orange">⚠️ Maintenance · reconnaissance dégradée · RIPPLE programmée S18</div>
+    <div class="section-title">Équipes — vue agrégée</div>
+    <table class="table">
+      <thead><tr><th>Équipe</th><th>Effectif</th><th>Score</th><th>Participation</th><th>État</th></tr></thead>
+      <tbody>
+        <tr><td>Production</td><td>24</td><td>72</td><td>87%</td><td><span class="tag ok">OK</span></td></tr>
+        <tr><td>Qualité</td><td>18</td><td>66</td><td>83%</td><td><span class="tag ok">OK</span></td></tr>
+        <tr><td>Logistique</td><td>32</td><td>61</td><td>78%</td><td><span class="tag warn">Vigilance</span></td></tr>
+        <tr><td>Maintenance</td><td>21</td><td>59</td><td>71%</td><td><span class="tag warn">Vigilance</span></td></tr>
+        <tr><td>Atelier C</td><td>15</td><td>48</td><td>80%</td><td><span class="tag alert">Alerte</span></td></tr>
+        <tr><td>Support</td><td>46</td><td>74</td><td>89%</td><td><span class="tag ok">OK</span></td></tr>
+      </tbody>
+    </table>
+    <div class="section-title">Rapport CSE prêt</div>
+    <div class="list-card"><div class="icon">📑</div><div class="body"><h4>Bilan RPS T2 2026 · prêt à présenter</h4><p>Généré automatiquement · 12 pages · données anonymisées</p></div></div>
+  </section>
+
+  <section class="role-view" id="view-admin">
+    <div class="greeting">
+      <div class="hello">Bonjour 👋</div>
+      <div class="name">Cabinet Juridique</div>
+      <div class="ctx">Conformité · DUERP automatisé · Audit trail SHIELD</div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="v" style="color:var(--success)">98%</div><div class="l">Conformité L.4121-1</div></div>
+      <div class="kpi"><div class="v">142</div><div class="l">Preuves horodatées</div></div>
+      <div class="kpi"><div class="v">24</div><div class="l">DUERP générés</div></div>
+      <div class="kpi"><div class="v" style="color:var(--success)">0</div><div class="l">Contentieux ouverts</div></div>
+    </div>
+    <div class="section-title">DUERP — état de conformité</div>
+    <div class="alert green">✅ DUERP 2026 généré le 14/05/2026 · 156 risques psychosociaux évalués · signature horodatée</div>
+    <div class="alert green">✅ Plan annuel de prévention · 12 actions tracées · ISO 45003 conforme</div>
+    <div class="alert orange">⚠️ Mise à jour trimestrielle T3 attendue avant le 30/09/2026</div>
+    <div class="section-title">Audit trail SHIELD — 30 derniers jours</div>
+    <table class="table">
+      <thead><tr><th>Date</th><th>Évènement</th><th>Source</th><th>Hash</th></tr></thead>
+      <tbody>
+        <tr><td>14/05/2026</td><td>DUERP 2026 — version finale signée</td><td>RH · M.Lefèvre</td><td>0x7a3f...c91</td></tr>
+        <tr><td>12/05/2026</td><td>Plan d'action atelier C · validé</td><td>RH · M.Lefèvre</td><td>0x4b2e...8f0</td></tr>
+        <tr><td>08/05/2026</td><td>Alerte SENTINEL S18 · burnout</td><td>IA · auto</td><td>0x9c1a...3d2</td></tr>
+        <tr><td>02/05/2026</td><td>Bilan trimestriel T1 · CSE</td><td>RH · M.Lefèvre</td><td>0x2e8b...a47</td></tr>
+        <tr><td>28/04/2026</td><td>RIPPLE Logistique · clôturée</td><td>Manager · P.Dumont</td><td>0x6f3d...51c</td></tr>
+      </tbody>
+    </table>
+    <div class="section-title">Preuves juridiques exportables</div>
+    <div class="list-card"><div class="icon">📜</div><div class="body"><h4>Dossier de preuve — atelier C</h4><p>14 documents · audit trail complet · prêt pour conseil prud'hommes</p></div></div>
+    <div class="list-card"><div class="icon">🛡️</div><div class="body"><h4>Attestation de conformité Article L.4121-1</h4><p>Générée le 15/05/2026 · signature électronique qualifiée</p></div></div>
+  </section>
+
+  <footer>
+    MindWork · Démo privée · Données fictives · © 2026 · Aliya ARNOUS-BLAYO · Toulouse
+  </footer>
+</div>
+
+<script>
+// ===== CONFIG PERSONNALISABLE =====
+const DEMO_CONFIG = {
+  validUsers: [
+    { user: "albane.iotvalley", pwd: "MindWork2026!" }
+  ],
+  prospectName: "IoT Valley",
+  expirationDate: "30/06/2026"
+};
+// ==================================
+
+document.getElementById('loginSub').textContent = "Accès réservé · " + DEMO_CONFIG.prospectName;
+document.getElementById('expDate').textContent = DEMO_CONFIG.expirationDate;
+
+function tryLogin() {
+  const u = document.getElementById('user').value.trim().toLowerCase();
+  const p = document.getElementById('pwd').value;
+  const err = document.getElementById('loginError');
+  const ok = DEMO_CONFIG.validUsers.some(v => v.user.toLowerCase() === u && v.pwd === p);
+  if (ok) {
+    err.classList.remove('show');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').classList.add('active');
+    sessionStorage.setItem('mw_demo_auth','1');
+  } else {
+    err.classList.add('show');
+  }
+}
+
+document.getElementById('pwd').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+document.getElementById('user').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+function enterRole(role, label) {
+  document.getElementById('selector').style.display = 'none';
+  document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + role).classList.add('active');
+  const badge = document.getElementById('roleBadge');
+  badge.textContent = label;
+  badge.style.display = 'inline-block';
+  document.getElementById('changeBtn').style.display = 'inline-block';
+  window.scrollTo(0, 0);
+}
+
+function showSelector() {
+  document.querySelectorAll('.role-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('selector').style.display = 'block';
+  document.getElementById('roleBadge').style.display = 'none';
+  document.getElementById('changeBtn').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+function logout() {
+  sessionStorage.removeItem('mw_demo_auth');
+  location.reload();
+}
+
+if (sessionStorage.getItem('mw_demo_auth') === '1') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+}
+</script>
+</body>
+</html>
